@@ -9,7 +9,7 @@
  * - Automatic dependency management
  * - Retry logic for handling concurrent modification errors
  * - Rate limiting to prevent API rate limits
- * - Brand-specific targeting capabilities
+ * - Brand-specific filtering capability
  */
 
 // Core dependencies
@@ -54,13 +54,11 @@ const DEFAULT_CONFIG = {
   DB_USERNAME: process.env.DB_USERNAME || "APIUser",
   DB_PASSWORD: process.env.DB_PASSWORD,
   GADS_CUSTOMER_ID: process.env.GADS_CUSTOMER_ID || "4018470779",
-  DEFAULT_USER_LIST_ID: process.env.DEFAULT_USER_LIST_ID || "9027934773",
+  USER_LIST_ID: process.env.DEFAULT_USER_LIST_ID || "9027934773",
   API_BATCH_SIZE: parseInt(process.env.API_BATCH_SIZE) || 2500,  
   API_RETRY_COUNT: parseInt(process.env.API_RETRY_COUNT) || 3,
   API_RETRY_DELAY_BASE: parseInt(process.env.API_RETRY_DELAY_BASE) || 2,
-  API_RATE_LIMIT_DELAY: parseFloat(process.env.API_RATE_LIMIT_DELAY) || 0.5,
-  // Single user list for all brands
-  USER_LIST_ID: process.env.DEFAULT_USER_LIST_ID || "9027934773"
+  API_RATE_LIMIT_DELAY: parseFloat(process.env.API_RATE_LIMIT_DELAY) || 0.5
 };
 
 /**
@@ -76,25 +74,8 @@ const argv = yargs(hideBin(process.argv))
   })
   .option('brand', {
     alias: 'b',
-    description: 'Upload data for a specific brand only',
+    description: 'Filter data for a specific brand only',
     type: 'string'
-  })
-  .option('all-brands', {
-    description: 'Process all configured brands in sequence',
-    type: 'boolean',
-    default: false
-  })
-  .option('create-brand-list', {
-    description: 'Create a new user list for the specified brand',
-    type: 'string'
-  })
-  .option('list-brands', {
-    description: 'List all available brand configurations',
-    type: 'boolean'
-  })
-  .option('list-user-lists', {
-    description: 'List all available customer match user lists',
-    type: 'boolean'
   })
   .option('stats-only', {
     description: 'Only gather and display statistics without uploading to Google Ads',
@@ -143,23 +124,9 @@ class GoogleAdsUploader {
     this.dbConn = null;
     this.googleAdsClient = null;
     
-    // Brand-specific configuration
-    this.availableBrands = Object.keys(config.BRANDS);
-    logger.info(`Available brands: ${this.availableBrands.join(', ')}`);
-    
-    if (brand && !this.availableBrands.includes(brand)) {
-      logger.warn(`Specified brand '${brand}' not found in configuration. Using default.`);
-      this.brand = "default";
-    }
-    
-    // Set user list ID based on brand
-    if (brand && this.availableBrands.includes(brand)) {
-      this.userListId = config.BRANDS[brand].USER_LIST_ID;
-      logger.info(`Using brand: ${brand}, User List ID: ${this.userListId}`);
-    } else {
-      this.userListId = config.DEFAULT_USER_LIST_ID;
-      logger.info(`Using default User List ID: ${this.userListId}`);
-    }
+    // Single user list for all brands
+    this.userListId = config.USER_LIST_ID;
+    logger.info(`Using User List ID: ${this.userListId}`);
   }
 
   /**
@@ -247,7 +214,7 @@ class GoogleAdsUploader {
       request.input('FullUpload', sql.Bit, fullUploadValue);
       
       // Add brand parameter if specified
-      if (this.brand && this.brand !== "default") {
+      if (this.brand) {
         request.input('Brand', sql.NVarChar, this.brand);
         logger.info(`Executing stored procedure with @FullUpload = ${fullUploadValue}, @Brand = '${this.brand}'`);
       } else {
@@ -298,7 +265,7 @@ class GoogleAdsUploader {
       }
       
       // Skip if we're filtering by brand and this row doesn't match
-      if (this.brand && this.brand !== "default" && brandRaw && brandRaw !== this.brand) {
+      if (this.brand && brandRaw && brandRaw.toLowerCase() !== this.brand.toLowerCase()) {
         return;
       }
       
@@ -490,7 +457,6 @@ class GoogleAdsUploader {
       
       // Get the appropriate service
       const offlineUserDataJobService = customer.getService('OfflineUserDataJobService');
-      const userListService = customer.getService('UserListService');
       
       // Create an offline user data job
       const createJobResponse = await offlineUserDataJobService.create({
@@ -641,128 +607,12 @@ class GoogleAdsUploader {
   }
 
   /**
-   * Create a new user list for a specific brand
-   */
-  async createBrandSpecificUserList(brandName, description = null) {
-    if (!this.googleAdsClient) {
-      logger.error("Google Ads client not initialized.");
-      return null;
-    }
-    
-    try {
-      logger.info(`Creating new user list for brand: ${brandName}`);
-      
-      // Create a Customer object
-      const customer = this.googleAdsClient.Customer({
-        customer_id: this.config.GADS_CUSTOMER_ID,
-        refresh_token: process.env.GOOGLE_ADS_REFRESH_TOKEN
-      });
-      
-      // Get the UserListService
-      const userListService = customer.getService('UserListService');
-      
-      // Create the user list
-      const listDescription = description || `${brandName.charAt(0).toUpperCase() + brandName.slice(1)} Brand Customer List`;
-      
-      const userListOperation = {
-        create: {
-          name: `${brandName.charAt(0).toUpperCase() + brandName.slice(1)} Brand Customers - ${new Date().toISOString().split('T')[0]}`,
-          description: listDescription,
-          membershipLifeSpan: 10000, // Days, roughly 27 years
-          customerMatchUploadKeyType: 'CONTACT_INFO', // Use contact info for matching
-          crm_based_user_list: {
-            app_id: "com.example.app" // Required placeholder
-          }
-        }
-      };
-      
-      const response = await userListService.mutate({
-        customerId: this.config.GADS_CUSTOMER_ID,
-        operations: [userListOperation]
-      });
-      
-      if (response && response.results && response.results.length > 0) {
-        const newUserList = response.results[0];
-        logger.info(`Successfully created user list: ${newUserList.resourceName}`);
-        
-        // Extract the user list ID from resource name
-        const userListId = newUserList.resourceName.split('/').pop();
-        
-        return {
-          resourceName: newUserList.resourceName,
-          userListId: userListId
-        };
-      } else {
-        logger.error("Failed to create user list: No results returned");
-        return null;
-      }
-    } catch (err) {
-      logger.error(`Error creating brand-specific user list: ${err.message}`);
-      if (err.details) {
-        logger.error(`Details: ${JSON.stringify(err.details)}`);
-      }
-      return null;
-    }
-  }
-
-  /**
-   * List all available Customer Match user lists
-   */
-  async listAvailableUserLists() {
-    if (!this.googleAdsClient) {
-      logger.error("Google Ads client not initialized.");
-      return null;
-    }
-    
-    try {
-      logger.info("Listing available Customer Match user lists...");
-      
-      // Create a Customer object
-      const customer = this.googleAdsClient.Customer({
-        customer_id: this.config.GADS_CUSTOMER_ID,
-        refresh_token: process.env.GOOGLE_ADS_REFRESH_TOKEN
-      });
-      
-      // Get the GoogleAdsService
-      const googleAdsService = customer.getService('GoogleAdsService');
-      
-      
-      const response = await googleAdsService.search({
-        customerId: this.config.GADS_CUSTOMER_ID,
-        query: query
-      });
-      
-      const userLists = [];
-      
-      for await (const row of response) {
-        userLists.push({
-          id: row.userList.id,
-          name: row.userList.name,
-          description: row.userList.description,
-          membershipLifeSpan: row.userList.membershipLifeSpan,
-          sizeForDisplay: row.userList.sizeForDisplay,
-          sizeForSearch: row.userList.sizeForSearch,
-          type: row.userList.type
-        });
-      }
-      
-      return userLists;
-    } catch (err) {
-      logger.error(`Error listing user lists: ${err.message}`);
-      if (err.details) {
-        logger.error(`Details: ${JSON.stringify(err.details)}`);
-      }
-      return null;
-    }
-  }
-
-  /**
    * Run the complete customer data upload process
    */
   async run() {
     try {
       logger.info(`Starting Google Ads Customer Data Upload Tool - Run ID: ${this.runId}`);
-      logger.info(`Mode: ${this.runMode}, Brand: ${this.brand || 'All brands'}`);
+      logger.info(`Mode: ${this.runMode}, Brand Filter: ${this.brand || 'All brands'}`);
       
       // Initialize connections
       logger.info("Initializing database connection...");
@@ -818,115 +668,7 @@ class GoogleAdsUploader {
  */
 async function main() {
   try {
-    // Handle list-brands command
-    if (argv['list-brands']) {
-      logger.info("Available brand configurations:");
-      Object.keys(DEFAULT_CONFIG.BRANDS).forEach(brand => {
-        logger.info(`  - ${brand}: User List ID ${DEFAULT_CONFIG.BRANDS[brand].USER_LIST_ID}`);
-      });
-      return 0;
-    }
-    
-    // Handle create-brand-list command
-    if (argv['create-brand-list']) {
-      const brandName = argv['create-brand-list'].toLowerCase();
-      
-      // Initialize Google Ads client first
-      const uploader = new GoogleAdsUploader(DEFAULT_CONFIG);
-      uploader.initializeGoogleAdsClient();
-      
-      const result = await uploader.createBrandSpecificUserList(brandName);
-      if (result) {
-        logger.info(`Successfully created user list for brand '${brandName}'`);
-        logger.info(`User List ID: ${result.userListId}`);
-        logger.info(`Add to configuration with environment variable: ${brandName.toUpperCase()}_USER_LIST_ID=${result.userListId}`);
-      } else {
-        logger.error(`Failed to create user list for brand '${brandName}'`);
-      }
-      return result ? 0 : 1;
-    }
-    
-    // Handle list-user-lists command
-    if (argv['list-user-lists']) {
-      // Initialize Google Ads client first
-      const uploader = new GoogleAdsUploader(DEFAULT_CONFIG);
-      uploader.initializeGoogleAdsClient();
-      
-      const userLists = await uploader.listAvailableUserLists();
-      if (userLists && userLists.length > 0) {
-        logger.info(`Found ${userLists.length} customer match user lists:`);
-        userLists.forEach(list => {
-          logger.info(`  - ID: ${list.id}, Name: ${list.name}`);
-          logger.info(`    Description: ${list.description || 'None'}`);
-          logger.info(`    Size: ${list.sizeForDisplay || 0} (display), ${list.sizeForSearch || 0} (search)`);
-        });
-      } else {
-        logger.warn("No customer match user lists found.");
-      }
-      return 0;
-    }
-    
-    // Process all brands in sequence
-    if (argv['all-brands']) {
-      logger.info("Processing all configured brands in sequence...");
-      
-      const brands = Object.keys(DEFAULT_CONFIG.BRANDS).filter(brand => brand !== 'default');
-      
-      if (brands.length === 0) {
-        logger.warn("No brand-specific configurations found. Add brand configurations to process multiple brands.");
-        logger.info("Example: Add environment variables like BRANDNAME_USER_LIST_ID=1234567890");
-        return 1;
-      }
-      
-      logger.info(`Found ${brands.length} brands to process: ${brands.join(', ')}`);
-      
-      let overallSuccess = true;
-      let resultsTable = [];
-      
-      // Process each brand
-      for (let i = 0; i < brands.length; i++) {
-        const brandName = brands[i];
-        logger.info(`\n[${i+1}/${brands.length}] Processing brand: ${brandName}`);
-        
-        const brandUploader = new GoogleAdsUploader(
-          DEFAULT_CONFIG,
-          argv.mode,
-          brandName
-        );
-        
-        const brandSuccess = await brandUploader.run();
-        overallSuccess = overallSuccess && brandSuccess;
-        
-        // Record result
-        resultsTable.push({
-          brand: brandName,
-          success: brandSuccess ? 'SUCCESS' : 'FAILED',
-          recordsProcessed: brandUploader.totalRowsProcessed,
-          operationsUploaded: brandUploader.processedOperations.length
-        });
-        
-        // Add a small delay between brand processing
-        if (i < brands.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        }
-      }
-      
-      // Display summary table
-      logger.info("\n========== MULTI-BRAND PROCESSING SUMMARY ==========");
-      logger.info(`Mode: ${argv.mode.toUpperCase()}`);
-      logger.info(`Time: ${new Date().toISOString()}`);
-      logger.info("----------------------------------------------------");
-      resultsTable.forEach(result => {
-        logger.info(`${result.brand.padEnd(15)}: ${result.success.padEnd(8)} | Processed: ${result.recordsProcessed.toString().padEnd(6)} | Uploaded: ${result.operationsUploaded}`);
-      });
-      logger.info("----------------------------------------------------");
-      logger.info(`Overall Result: ${overallSuccess ? 'SUCCESS' : 'PARTIAL FAILURE'}`);
-      logger.info("====================================================");
-      
-      return overallSuccess ? 0 : 1;
-    }
-    
-    // Regular single brand upload process
+    // Regular single brand or all brands upload process
     const uploader = new GoogleAdsUploader(
       DEFAULT_CONFIG,
       argv.mode,
