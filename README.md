@@ -48,6 +48,11 @@ Upload only customers for a specific brand:
 node googleAdsUploader.js --brand brandname
 ```
 
+Upload for all brands at once (processes each brand sequentially):
+```
+node googleAdsUploader.js --all-brands
+```
+
 ### Listing Available Configurations
 
 List configured brands:
@@ -69,11 +74,33 @@ node googleAdsUploader.js --create-brand-list brandname
 
 ## Automatic Uploads
 
-For automatic uploads, you can use this tool with scheduling solutions like cron jobs:
+This tool provides two methods for automating uploads:
+
+### 1. Built-in Scheduler
+
+Use the included scheduler script for flexible automated uploads:
+
+```
+node schedule-upload.js
+```
+
+The scheduler runs in the background and executes uploads based on your configured schedules. Edit `schedule-upload.js` to customize:
+- Default schedule (runs at 2 AM daily for all brands)
+- Brand-specific schedules (run different brands at different times)
+- Upload modes (delta or full)
+
+### 2. System Cron Jobs
+
+Alternatively, use system cron jobs for direct scheduling:
 
 Example crontab entry (run daily at 2 AM):
 ```
-0 2 * * * cd /path/to/tool && node googleAdsUploader.js >> uploads.log 2>&1
+0 2 * * * cd /path/to/tool && node googleAdsUploader.js --all-brands --silent >> uploads.log 2>&1
+```
+
+Example for specific brands:
+```
+0 1 * * * cd /path/to/tool && node googleAdsUploader.js --brand brandname --silent >> brand_uploads.log 2>&1
 ```
 
 ## Database Requirements

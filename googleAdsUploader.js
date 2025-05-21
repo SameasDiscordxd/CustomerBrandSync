@@ -99,6 +99,11 @@ const argv = yargs(hideBin(process.argv))
     description: 'Upload data for a specific brand only',
     type: 'string'
   })
+  .option('all-brands', {
+    description: 'Process all configured brands in sequence',
+    type: 'boolean',
+    default: false
+  })
   .option('create-brand-list', {
     description: 'Create a new user list for the specified brand',
     type: 'string'
@@ -110,6 +115,16 @@ const argv = yargs(hideBin(process.argv))
   .option('list-user-lists', {
     description: 'List all available customer match user lists',
     type: 'boolean'
+  })
+  .option('stats-only', {
+    description: 'Only gather and display statistics without uploading to Google Ads',
+    type: 'boolean',
+    default: false
+  })
+  .option('silent', {
+    description: 'Reduce console output (for automated runs). Still logs to file.',
+    type: 'boolean',
+    default: false
   })
   .option('config', {
     alias: 'c',
@@ -787,12 +802,29 @@ class GoogleAdsUploader {
       logger.info("Initializing database connection...");
       await this.initializeDbConnection();
       
-      logger.info("Initializing Google Ads client...");
-      this.initializeGoogleAdsClient();
-      
       // Fetch and process data
       logger.info("Fetching and processing customer data...");
       await this.fetchAndProcessCustomerData();
+      
+      // Display statistics
+      logger.info("\n==== Customer Data Processing Statistics ====");
+      logger.info(`Total records processed: ${this.totalRowsProcessed}`);
+      logger.info(`Records with valid email: ${this.emailProcessedCount}`);
+      logger.info(`Records with valid phone: ${this.phoneProcessedCount}`);
+      logger.info(`Records with valid address: ${this.addressProcessedCount}`);
+      logger.info(`Records with at least one valid identifier: ${this.rowsWithAnyIdCount}`);
+      logger.info(`Operations prepared for upload: ${this.processedOperations.length}`);
+      logger.info("=========================================\n");
+      
+      // If stats-only mode, don't proceed with upload
+      if (argv['stats-only']) {
+        logger.info("Stats-only mode enabled. Skipping Google Ads upload.");
+        return true;
+      }
+      
+      // Initialize Google Ads client and upload data
+      logger.info("Initializing Google Ads client...");
+      this.initializeGoogleAdsClient();
       
       // Upload data
       logger.info("Uploading processed data to Google Ads...");
@@ -868,7 +900,67 @@ async function main() {
       return 0;
     }
     
-    // Regular upload process
+    // Process all brands in sequence
+    if (argv['all-brands']) {
+      logger.info("Processing all configured brands in sequence...");
+      
+      const brands = Object.keys(DEFAULT_CONFIG.BRANDS).filter(brand => brand !== 'default');
+      
+      if (brands.length === 0) {
+        logger.warn("No brand-specific configurations found. Add brand configurations to process multiple brands.");
+        logger.info("Example: Add environment variables like BRANDNAME_USER_LIST_ID=1234567890");
+        return 1;
+      }
+      
+      logger.info(`Found ${brands.length} brands to process: ${brands.join(', ')}`);
+      
+      let overallSuccess = true;
+      let resultsTable = [];
+      
+      // Process each brand
+      for (let i = 0; i < brands.length; i++) {
+        const brandName = brands[i];
+        logger.info(`\n[${i+1}/${brands.length}] Processing brand: ${brandName}`);
+        
+        const brandUploader = new GoogleAdsUploader(
+          DEFAULT_CONFIG,
+          argv.mode,
+          brandName
+        );
+        
+        const brandSuccess = await brandUploader.run();
+        overallSuccess = overallSuccess && brandSuccess;
+        
+        // Record result
+        resultsTable.push({
+          brand: brandName,
+          success: brandSuccess ? 'SUCCESS' : 'FAILED',
+          recordsProcessed: brandUploader.totalRowsProcessed,
+          operationsUploaded: brandUploader.processedOperations.length
+        });
+        
+        // Add a small delay between brand processing
+        if (i < brands.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      }
+      
+      // Display summary table
+      logger.info("\n========== MULTI-BRAND PROCESSING SUMMARY ==========");
+      logger.info(`Mode: ${argv.mode.toUpperCase()}`);
+      logger.info(`Time: ${new Date().toISOString()}`);
+      logger.info("----------------------------------------------------");
+      resultsTable.forEach(result => {
+        logger.info(`${result.brand.padEnd(15)}: ${result.success.padEnd(8)} | Processed: ${result.recordsProcessed.toString().padEnd(6)} | Uploaded: ${result.operationsUploaded}`);
+      });
+      logger.info("----------------------------------------------------");
+      logger.info(`Overall Result: ${overallSuccess ? 'SUCCESS' : 'PARTIAL FAILURE'}`);
+      logger.info("====================================================");
+      
+      return overallSuccess ? 0 : 1;
+    }
+    
+    // Regular single brand upload process
     const uploader = new GoogleAdsUploader(
       DEFAULT_CONFIG,
       argv.mode,
