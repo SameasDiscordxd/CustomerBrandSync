@@ -1,0 +1,4 @@
+pyodbc>=4.0.39
+phonenumbers>=8.13.0
+google-ads>=23.0.0
+pyyaml>=6.0.0
