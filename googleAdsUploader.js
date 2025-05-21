@@ -243,40 +243,24 @@ class GoogleAdsUploader {
       return false;
     }
     
-    // Determine which stored procedure execution mode to use
-    let sqlToExecute;
-    let params = [];
-    
-    if (this.runMode === "full") {
-      logger.info("Executing SPROC in FULL UPLOAD mode (@FullUpload = 1).");
-      if (this.brand && this.brand !== "default") {
-        logger.info(`Filtering data for brand: ${this.brand}`);
-        sqlToExecute = "EXEC dbo.GetNewCustomersForGoogleAdsByBrand @FullUpload = 1, @Brand = @brandParam";
-        params = [{ name: 'brandParam', value: this.brand }];
-      } else {
-        sqlToExecute = "EXEC dbo.GetNewCustomersForGoogleAds @FullUpload = 1";
-      }
-    } else {
-      logger.info("Executing SPROC in DELTA UPLOAD mode (@FullUpload = 0).");
-      if (this.brand && this.brand !== "default") {
-        logger.info(`Filtering data for brand: ${this.brand}`);
-        sqlToExecute = "EXEC dbo.GetNewCustomersForGoogleAdsByBrand @FullUpload = 0, @Brand = @brandParam";
-        params = [{ name: 'brandParam', value: this.brand }];
-      } else {
-        sqlToExecute = "EXEC dbo.GetNewCustomersForGoogleAds @FullUpload = 0";
-      }
-    }
+    // Use the existing stored procedure
+    let fullUploadValue = this.runMode === "full" ? 1 : 0;
+    let request = this.dbConn.request();
     
     try {
-      let request = this.dbConn.request();
+      // Add parameters
+      request.input('FullUpload', sql.Bit, fullUploadValue);
       
-      // Add parameters if needed
-      params.forEach(param => {
-        request.input(param.name, param.value);
-      });
+      // Add brand parameter if specified
+      if (this.brand && this.brand !== "default") {
+        request.input('Brand', sql.NVarChar, this.brand);
+        logger.info(`Executing stored procedure with @FullUpload = ${fullUploadValue}, @Brand = '${this.brand}'`);
+      } else {
+        logger.info(`Executing stored procedure with @FullUpload = ${fullUploadValue}`);
+      }
       
-      logger.info(`Executing: ${sqlToExecute}`);
-      const result = await request.query(sqlToExecute);
+      // Execute the stored procedure - Using the existing one that handles brand filtering
+      const result = await request.execute('dbo.GetNewCustomersForGoogleAds');
       logger.info("Stored procedure executed. Processing results...");
       
       // Process the data
