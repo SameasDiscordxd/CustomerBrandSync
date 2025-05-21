@@ -2,33 +2,38 @@
 /**
  * Google Ads Customer Data Upload Tool
  * 
- * This script automates the upload of customer data to Google Ads for Customer Match audiences,
- * supporting both full and incremental (delta) uploads.
+ * This tool does the heavy lifting of taking our customer data from SQL Server 
+ * and uploading it to Google Ads for Customer Match audiences. We can run it in
+ * delta mode (just new customers) or full mode (wipe and replace).
  * 
- * Features:
- * - Automatic dependency management
- * - Retry logic for handling concurrent modification errors
- * - Rate limiting to prevent API rate limits
+ * What this tool handles:
+ * - Connects to our main database to fetch customer records
+ * - Formats and hashes customer data per Google's requirements
+ * - Handles emails, phone numbers, and mailing addresses
+ * - Uploads everything in optimized batches with intelligent retry logic
+ * - Provides clear stats on what was processed
+ * 
+ * Created May 2025 - Marketing Technology Team
  */
 
-// Core dependencies
+// Standard Node stuff we need
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
+const crypto = require('crypto');  // For secure hashing of customer data
 
-// Third-party dependencies
-const yargs = require('yargs/yargs');
+// External packages that make our lives easier
+const yargs = require('yargs/yargs');  // For handling command line arguments
 const { hideBin } = require('yargs/helpers');
-const winston = require('winston');
-const dotenv = require('dotenv');
-const sql = require('mssql');
-const { parsePhoneNumber } = require('libphonenumber-js');
-const { GoogleAdsApi } = require('google-ads-api');
+const winston = require('winston');    // For proper logging
+const dotenv = require('dotenv');      // For loading our credentials
+const sql = require('mssql');          // For database connections
+const { parsePhoneNumber } = require('libphonenumber-js'); // Handles phone formatting
+const { GoogleAdsApi } = require('google-ads-api');  // The Google API wrapper
 
 // Load environment variables
 dotenv.config();
 
-// Initialize logger
+// Set up our logging system - saves to both console and file so we can troubleshoot later
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -43,33 +48,38 @@ const logger = winston.createLogger({
   ]
 });
 
-/**
- * Default configuration
- * These can be overridden by .env file or command line arguments
- */
+// Our default settings - pull from environment variables when possible, otherwise use these fallbacks
+// NOTE: Make sure you set these in your .env file for production use!
 const DEFAULT_CONFIG = {
+  // Database connection info
   DB_SERVER: process.env.DB_SERVER || "bbtdatanew.privatelink.westus.cloudapp.azure.com,1401",
   DB_DATABASE: process.env.DB_DATABASE || "Venom",
-  DB_USERNAME: process.env.DB_USERNAME || "APIUser",
-  DB_PASSWORD: process.env.DB_PASSWORD,
-  GADS_CUSTOMER_ID: process.env.GADS_CUSTOMER_ID || "4018470779",
-  USER_LIST_ID: process.env.DEFAULT_USER_LIST_ID || "9027934773",
-  API_BATCH_SIZE: parseInt(process.env.API_BATCH_SIZE) || 2500,  
-  API_RETRY_COUNT: parseInt(process.env.API_RETRY_COUNT) || 3,
-  API_RETRY_DELAY_BASE: parseInt(process.env.API_RETRY_DELAY_BASE) || 2,
-  API_RATE_LIMIT_DELAY: parseFloat(process.env.API_RATE_LIMIT_DELAY) || 0.5
+  DB_USERNAME: process.env.DB_USERNAME || "APIUser", 
+  DB_PASSWORD: process.env.DB_PASSWORD,  // This MUST be in your .env file
+  
+  // Google Ads account settings
+  GADS_CUSTOMER_ID: process.env.GADS_CUSTOMER_ID || "4018470779",  // Our main account ID
+  USER_LIST_ID: process.env.DEFAULT_USER_LIST_ID || "9027934773",  // Customer Match list ID
+  
+  // API behavior settings - tweaked for optimal performance
+  API_BATCH_SIZE: parseInt(process.env.API_BATCH_SIZE) || 2500,     // How many records per batch
+  API_RETRY_COUNT: parseInt(process.env.API_RETRY_COUNT) || 3,      // How many times to retry failed API calls
+  API_RETRY_DELAY_BASE: parseInt(process.env.API_RETRY_DELAY_BASE) || 2,  // Exponential backoff base (seconds)
+  API_RATE_LIMIT_DELAY: parseFloat(process.env.API_RATE_LIMIT_DELAY) || 0.5  // Delay between batches (seconds)
 };
 
-/**
- * Command line argument configuration
- */
+// Command line options - makes it easy to use this tool in different ways
+// Examples:
+//   node final-googleAdsUploader.js                  (runs delta upload)
+//   node final-googleAdsUploader.js --mode full      (runs full upload)
+//   node final-googleAdsUploader.js --stats-only     (just shows stats, no upload)
 const argv = yargs(hideBin(process.argv))
   .option('mode', {
     alias: 'm',
     description: 'Upload mode: "delta" for incremental updates, "full" for complete replacement',
     type: 'string',
     choices: ['delta', 'full'],
-    default: 'delta'
+    default: 'delta'  // Default to delta so we don't accidentally wipe out our audience
   })
   .option('stats-only', {
     description: 'Only gather and display statistics without uploading to Google Ads',
