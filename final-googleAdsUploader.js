@@ -59,7 +59,15 @@ const DEFAULT_CONFIG = {
   
   // Google Ads account settings
   GADS_CUSTOMER_ID: process.env.GADS_CUSTOMER_ID || "4018470779",  // Our main account ID
-  USER_LIST_ID: process.env.DEFAULT_USER_LIST_ID || "9027934773",  // Customer Match list ID
+  
+  // Master list - gets ALL customers regardless of brand
+  MASTER_USER_LIST_ID: process.env.MASTER_USER_LIST_ID || "9027934773",
+  
+  // Brand-specific lists - customers get sorted into these based on Brand column from SQL
+  BBT_USER_LIST_ID: process.env.BBT_USER_LIST_ID || "",  // BBT brand customers
+  ATD_USER_LIST_ID: process.env.ATD_USER_LIST_ID || "",  // ATD brand customers  
+  TW_USER_LIST_ID: process.env.TW_USER_LIST_ID || "",    // TW brand customers
+  RT_USER_LIST_ID: process.env.RT_USER_LIST_ID || "",    // RT brand customers
   
   // API behavior settings - tweaked for optimal performance
   API_BATCH_SIZE: parseInt(process.env.API_BATCH_SIZE) || 2500,     // How many records per batch
@@ -127,9 +135,29 @@ class GoogleAdsUploader {
     this.dbConn = null;
     this.googleAdsClient = null;
     
-    // Single user list for all customers
-    this.userListId = config.USER_LIST_ID;
-    logger.info(`Using User List ID: ${this.userListId}`);
+    // Set up our brand-specific upload lists
+    this.brandLists = {
+      'MASTER': config.MASTER_USER_LIST_ID,
+      'BBT': config.BBT_USER_LIST_ID,
+      'ATD': config.ATD_USER_LIST_ID, 
+      'TW': config.TW_USER_LIST_ID,
+      'RT': config.RT_USER_LIST_ID
+    };
+    
+    // Track operations by list so we can upload to multiple lists
+    this.operationsByList = {
+      'MASTER': [],
+      'BBT': [],
+      'ATD': [],
+      'TW': [],
+      'RT': []
+    };
+    
+    logger.info(`Master list ID: ${this.brandLists.MASTER}`);
+    if (config.BBT_USER_LIST_ID) logger.info(`BBT list ID: ${this.brandLists.BBT}`);
+    if (config.ATD_USER_LIST_ID) logger.info(`ATD list ID: ${this.brandLists.ATD}`);
+    if (config.TW_USER_LIST_ID) logger.info(`TW list ID: ${this.brandLists.TW}`);
+    if (config.RT_USER_LIST_ID) logger.info(`RT list ID: ${this.brandLists.RT}`);
   }
 
   /**
@@ -254,6 +282,9 @@ class GoogleAdsUploader {
       const zipCodeRaw = row.ZipCode ? row.ZipCode.trim() : null;
       const stateCodeRaw = row.StateCode ? row.StateCode.trim() : null;
       
+      // Get the brand from SQL - this determines which lists this customer goes into
+      const brandRaw = row.Brand ? row.Brand.trim().toUpperCase() : null;
+      
       // Initialize variables for hashed identifiers
       let hashedEmail = null;
       let hashedPhone = null;
@@ -338,6 +369,15 @@ class GoogleAdsUploader {
         );
         
         if (operation) {
+          // Every customer goes to the master list
+          this.operationsByList.MASTER.push(operation);
+          
+          // If customer has a specific brand, also add them to that brand's list
+          if (brandRaw && this.operationsByList[brandRaw] && this.brandLists[brandRaw]) {
+            this.operationsByList[brandRaw].push(operation);
+          }
+          
+          // Keep track for legacy compatibility
           this.processedOperations.push(operation);
         }
       }
@@ -418,7 +458,7 @@ class GoogleAdsUploader {
   }
 
   /**
-   * Upload processed operations to Google Ads
+   * Upload processed operations to Google Ads - handles multiple lists
    */
   async uploadToGoogleAds() {
     if (!this.googleAdsClient) {
@@ -430,6 +470,39 @@ class GoogleAdsUploader {
       logger.warn("No operations to upload.");
       return true; // Not an error, just nothing to do
     }
+    
+    // Process each list that has operations
+    let overallSuccess = true;
+    
+    for (const [listName, operations] of Object.entries(this.operationsByList)) {
+      if (operations.length === 0) {
+        continue; // Skip empty lists
+      }
+      
+      const listId = this.brandLists[listName];
+      if (!listId) {
+        logger.warn(`No list ID configured for ${listName}, skipping ${operations.length} operations`);
+        continue;
+      }
+      
+      logger.info(`\n=== Uploading ${operations.length} operations to ${listName} list (ID: ${listId}) ===`);
+      
+      const success = await this._uploadToSpecificList(listName, listId, operations);
+      if (!success) {
+        logger.error(`Failed to upload to ${listName} list`);
+        overallSuccess = false;
+      } else {
+        logger.info(`Successfully uploaded to ${listName} list`);
+      }
+    }
+    
+    return overallSuccess;
+  }
+
+  /**
+   * Upload operations to a specific Google Ads list
+   */
+  async _uploadToSpecificList(listName, listId, operations) {
     
     try {
       logger.info(`Starting upload to Google Ads. Operations to upload: ${this.processedOperations.length}`);
