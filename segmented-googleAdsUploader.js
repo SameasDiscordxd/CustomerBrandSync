@@ -23,7 +23,11 @@ const defaultConfig = {
   GOOGLE_ADS_CLIENT_SECRET: process.env.GOOGLE_ADS_CLIENT_SECRET,
   GOOGLE_ADS_DEVELOPER_TOKEN: process.env.GOOGLE_ADS_DEVELOPER_TOKEN,
   GOOGLE_ADS_REFRESH_TOKEN: process.env.GOOGLE_ADS_REFRESH_TOKEN,
-  GOOGLE_ADS_CUSTOMER_ID: process.env.GOOGLE_ADS_CUSTOMER_ID,
+  
+  // Brand account Customer IDs
+  BBT_CUSTOMER_ID: process.env.BBT_CUSTOMER_ID,
+  ATD_CUSTOMER_ID: process.env.ATD_CUSTOMER_ID,
+  TW_CUSTOMER_ID: process.env.TW_CUSTOMER_ID,
 
   // BBT Brand Lists
   BBT_ALL_USER_LIST_ID: process.env.BBT_ALL_USER_LIST_ID,
@@ -206,12 +210,23 @@ class GoogleAdsSegmentedUploader {
         developer_token: this.config.GOOGLE_ADS_DEVELOPER_TOKEN
       });
 
-      this.customer = this.googleAdsClient.Customer({
-        customer_id: this.config.GOOGLE_ADS_CUSTOMER_ID,
-        refresh_token: this.config.GOOGLE_ADS_REFRESH_TOKEN
-      });
+      // Initialize customers for each brand account
+      this.customers = {
+        BBT: this.googleAdsClient.Customer({
+          customer_id: this.config.BBT_CUSTOMER_ID,
+          refresh_token: this.config.GOOGLE_ADS_REFRESH_TOKEN
+        }),
+        ATD: this.googleAdsClient.Customer({
+          customer_id: this.config.ATD_CUSTOMER_ID,
+          refresh_token: this.config.GOOGLE_ADS_REFRESH_TOKEN
+        }),
+        TW: this.googleAdsClient.Customer({
+          customer_id: this.config.TW_CUSTOMER_ID,
+          refresh_token: this.config.GOOGLE_ADS_REFRESH_TOKEN
+        })
+      };
 
-      logger.info('Google Ads API client initialized successfully');
+      logger.info('Google Ads API clients initialized for all brand accounts');
       return true;
     } catch (err) {
       logger.error(`Google Ads API client initialization failed: ${err.message}`);
@@ -503,16 +518,26 @@ class GoogleAdsSegmentedUploader {
    */
   async _uploadToSpecificList(listName, listId, operations) {
     try {
-      const service = this.customer.offlineUserDataJobs();
-      const resourceName = `customers/${this.config.GOOGLE_ADS_CUSTOMER_ID}/offlineUserDataJobs`;
+      // Determine which brand account to use
+      const [brandCode] = listName.split('_');
+      const customer = this.customers[brandCode];
+      const customerId = this.config[`${brandCode}_CUSTOMER_ID`];
+      
+      if (!customer || !customerId) {
+        logger.error(`No customer client configured for brand ${brandCode}`);
+        return false;
+      }
+      
+      const service = customer.offlineUserDataJobs();
+      const resourceName = `customers/${customerId}/offlineUserDataJobs`;
       
       // Create offline user data job
       const jobResponse = await service.create({
-        customer_id: this.config.GOOGLE_ADS_CUSTOMER_ID,
+        customer_id: customerId,
         offline_user_data_job: {
           type: 'CUSTOMER_MATCH_USER_LIST',
           customer_match_user_list_metadata: {
-            user_list: `customers/${this.config.GOOGLE_ADS_CUSTOMER_ID}/userLists/${listId}`
+            user_list: `customers/${customerId}/userLists/${listId}`
           }
         }
       });
@@ -715,7 +740,8 @@ async function main() {
     const missingFields = [];
     const requiredFields = [
       'GOOGLE_ADS_CLIENT_ID', 'GOOGLE_ADS_CLIENT_SECRET', 
-      'GOOGLE_ADS_DEVELOPER_TOKEN', 'GOOGLE_ADS_REFRESH_TOKEN', 'GOOGLE_ADS_CUSTOMER_ID',
+      'GOOGLE_ADS_DEVELOPER_TOKEN', 'GOOGLE_ADS_REFRESH_TOKEN',
+      'BBT_CUSTOMER_ID', 'ATD_CUSTOMER_ID', 'TW_CUSTOMER_ID',
       'DB_SERVER', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'
     ];
 
