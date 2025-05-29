@@ -500,6 +500,8 @@ class GoogleAdsUploader {
         overallSuccess = false;
       } else {
         logger.info(`Successfully uploaded to ${listName} list`);
+        // Record successful upload in tracking table
+        await this._updateTrackingRecord(listName, listId, operations.length, true);
       }
     }
     
@@ -669,6 +671,66 @@ class GoogleAdsUploader {
     
     logger.error(`Timeout waiting for job completion after ${timeoutSeconds} seconds`);
     return false;
+  }
+
+  /**
+   * Update the tracking table with brand-specific upload results
+   */
+  async _updateTrackingRecord(listName, listId, operationsCount, success) {
+    if (!this.dbConn) {
+      logger.warn("Database connection not available for tracking update");
+      return;
+    }
+
+    try {
+      // Get the human-readable brand name for tracking
+      let brandName = null;
+      if (listName !== 'MASTER') {
+        // Find the brand name that maps to this list code
+        for (const [sqlBrandName, code] of Object.entries(this.brandMapping)) {
+          if (code === listName) {
+            brandName = sqlBrandName;
+            break;
+          }
+        }
+      }
+
+      const request = this.dbConn.request();
+      
+      // Prepare the description based on upload mode and brand
+      let description;
+      if (listName === 'MASTER') {
+        description = this.runMode === 'full' 
+          ? 'Full Customer Upload - Master List' 
+          : 'Delta Customer Upload - Master List';
+      } else {
+        description = this.runMode === 'full'
+          ? `Full Customer Upload - ${brandName || listName} Brand`
+          : `Delta Customer Upload - ${brandName || listName} Brand`;
+      }
+
+      // Insert tracking record
+      const insertQuery = `
+        INSERT INTO dbo.GoogleAdsUploadTracking 
+        (LastUploadDate, UploadDescription, RowsProcessed, SuccessFlag, ActualUploadedCount, BrandName, BrandListId, BrandRowsProcessed)
+        VALUES (GETDATE(), @description, @rowsProcessed, @successFlag, @actualCount, @brandName, @listId, @brandRowsProcessed)
+      `;
+
+      request.input('description', description);
+      request.input('rowsProcessed', this.totalRowsProcessed);
+      request.input('successFlag', success ? 1 : 0);
+      request.input('actualCount', operationsCount);
+      request.input('brandName', brandName);
+      request.input('listId', listId);
+      request.input('brandRowsProcessed', operationsCount);
+
+      await request.query(insertQuery);
+      
+      logger.info(`Tracking record updated for ${listName}: ${operationsCount} operations uploaded`);
+      
+    } catch (err) {
+      logger.error(`Error updating tracking record for ${listName}: ${err.message}`);
+    }
   }
 
   /**
