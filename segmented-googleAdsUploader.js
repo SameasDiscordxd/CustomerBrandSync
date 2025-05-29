@@ -117,7 +117,9 @@ class GoogleAdsSegmentedUploader {
       'American Tire Depot': 'ATD',
       'Tire World': 'TW',
       'Robertson Tire': 'RT',
-      'Tires To You': 'TTY'
+      'Tires To You': 'TTY',
+      '': 'UNKNOWN',  // Handle blank preferred brand
+      'default': 'UNKNOWN'
     };
 
     // Store the user list IDs for each brand segment
@@ -257,7 +259,7 @@ class GoogleAdsSegmentedUploader {
               AND ih.StatusId = 3
               AND id.Active = 1
               AND id.Approved = 1
-              AND COALESCE(sb.Name, 'default') IN ('Big Brand Tire', 'American Tire Depot', 'Tire World')
+              AND COALESCE(sb.Name, 'default') IN ('Big Brand Tire', 'American Tire Depot', 'Tire World', 'Robertson Tire', 'Tires To You')
               AND (@FullUpload = 1 OR c.AddDate > DATEADD(day, -30, GETDATE()) OR c.ChangeDate > DATEADD(day, -30, GETDATE()))
         ),
         CustomerSegments AS (
@@ -289,7 +291,8 @@ class GoogleAdsSegmentedUploader {
           FROM dbo.MailChimp mc
           WHERE mc.MC_Status = 'subscribed' 
             AND (mc.VenomCustomerId = 0 OR mc.VenomCustomerId IS NULL)
-            AND mc.PreferredBrand IN ('Big Brand Tire', 'American Tire Depot', 'Tire World')
+            AND (mc.PreferredBrand IN ('Big Brand Tire', 'American Tire Depot', 'Tire World', 'Robertson Tire', 'Tires To You') 
+                 OR mc.PreferredBrand IS NULL OR mc.PreferredBrand = '')
         )
         
         SELECT *, 0 AS IsNonCustomer FROM CustomerSegments
