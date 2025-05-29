@@ -1,0 +1,104 @@
+USE [Venom]
+GO
+/****** Object:  StoredProcedure [dbo].[GetNewCustomersForGoogleAdsWithBrandInfo]    Script Date: 5/29/2025 7:52:23 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[GetNewCustomersForGoogleAdsWithBrandInfo] 
+    @FullUpload BIT = 0 -- Default is delta upload (0), set to 1 for full upload
+AS
+/*
+=============================================
+Author:         Josh Sartin
+Modified by:    Updated May 29, 2025
+Description:    Tracks Uploaded Customers to Google Ads API with Brand Information
+                and Customer Classification (Tire/Service)
+               
+                @FullUpload = 0: Delta upload (only new/changed customers)
+                @FullUpload = 1: Full upload (all customers)
+=============================================
+ --EXEC dbo.GetNewCustomersForGoogleAdsWithBrandInfo
+ --EXEC dbo.GetNewCustomersForGoogleAdsWithBrandInfo @FullUpload = 1
+*/
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @LastUploadDate DATETIME
+    DECLARE @RowsProcessed INT = 0
+    
+    -- Get the last upload date
+    SELECT @LastUploadDate = MAX(LastUploadDate)
+    FROM dbo.GoogleAdsUploadTracking
+    WHERE SuccessFlag = 1
+    
+    -- If last upload date is NULL, set a default value (30 days ago)
+    IF @LastUploadDate IS NULL
+        SET @LastUploadDate = DATEADD(day, -30, GETDATE())
+    
+    -- Get customers with classification based on mode (full or delta) and include brand information
+    SELECT DISTINCT
+        c.CustomerNumber,
+        c.FirstName,
+        c.LastName,
+        c.ContactGUID,
+        ih.CustomerEmail,
+        ih.CustomerPhoneNumber,
+        ih.CustomerZipCode,
+        ih.CustomerState AS StateCode,
+        -- Use the Name from StoreBrand as the brand identifier
+        -- Fall back to 'default' if no brand is found
+        COALESCE(sb.Name, 'default') AS BrandId,
+        -- Customer classification flags
+        MAX(CASE WHEN ii.PartTypeId = 13688 THEN 1 ELSE 0 END) AS IsTireCustomer,
+        MAX(CASE WHEN LEFT(id.PartNumber, 3) = 'LAB' THEN 1 ELSE 0 END) AS IsServiceCustomer
+    FROM
+        dbo.Customer AS c
+    INNER JOIN
+        dbo.InvoiceHeader AS ih ON c.Id = ih.CustomerId
+    INNER JOIN
+        dbo.InvoiceDetail AS id ON ih.Id = id.InvoiceHeaderId
+    LEFT JOIN
+        dbo.Store AS s ON ih.StoreId = s.Id
+    LEFT JOIN
+        dbo.StoreBrand AS sb ON s.StoreBrandId = sb.Id
+    LEFT JOIN
+        dbo.InventoryItem AS ii ON id.ItemId = ii.ItemId
+    WHERE
+        ((ih.CustomerEmail IS NOT NULL AND ih.CustomerEmail <> '')
+        OR (ih.CustomerPhoneNumber IS NOT NULL AND ih.CustomerPhoneNumber <> ''))
+        AND ih.StatusId = 3
+        AND id.Active = 1
+        AND id.Approved = 1
+        AND (
+            @FullUpload = 1 -- If full upload, ignore date filtering
+            OR (
+                c.AddDate > @LastUploadDate
+                OR c.ChangeDate > @LastUploadDate
+            )
+        )
+    GROUP BY
+        c.CustomerNumber,
+        c.FirstName,
+        c.LastName,
+        c.ContactGUID,
+        ih.CustomerEmail,
+        ih.CustomerPhoneNumber,
+        ih.CustomerZipCode,
+        ih.CustomerState,
+        COALESCE(sb.Name, 'default')
+    
+    -- Get row count for tracking
+    SET @RowsProcessed = @@ROWCOUNT
+    
+    -- Update the tracking table with today's date and row count
+    INSERT INTO dbo.GoogleAdsUploadTracking (LastUploadDate, UploadDescription, RowsProcessed, SuccessFlag)
+    VALUES (GETDATE(), 
+           CASE WHEN @FullUpload = 1 THEN 'Initial Full Customer Upload with Brand Info and Classification' 
+                ELSE 'Daily Google Ads Customer Upload with Brand Info and Classification' END,
+           @RowsProcessed,
+           1)  -- Set SuccessFlag to 1 since this is just recording the procedure execution
+    
+    -- Return row count for logging
+    SELECT @RowsProcessed AS RowsProcessed
+END
