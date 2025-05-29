@@ -63,11 +63,11 @@ const DEFAULT_CONFIG = {
   // Master list - gets ALL customers regardless of brand
   MASTER_USER_LIST_ID: process.env.MASTER_USER_LIST_ID || "9027934773",
   
-  // Brand-specific lists - customers get sorted into these based on Brand column from SQL
-  BBT_USER_LIST_ID: process.env.BBT_USER_LIST_ID || "",  // BBT brand customers
-  ATD_USER_LIST_ID: process.env.ATD_USER_LIST_ID || "",  // ATD brand customers  
-  TW_USER_LIST_ID: process.env.TW_USER_LIST_ID || "",    // TW brand customers
-  RT_USER_LIST_ID: process.env.RT_USER_LIST_ID || "",    // RT brand customers
+  // Brand-specific lists - customers get sorted into these based on BrandId column from SQL
+  BBT_USER_LIST_ID: process.env.BBT_USER_LIST_ID || "",  // "Big Brand Tire & Service" customers
+  ATD_USER_LIST_ID: process.env.ATD_USER_LIST_ID || "",  // "American Tire Depot" customers  
+  TW_USER_LIST_ID: process.env.TW_USER_LIST_ID || "",    // "Tire World, Inc" customers
+  RT_USER_LIST_ID: process.env.RT_USER_LIST_ID || "",    // RT brand customers (if you have this brand)
   
   // API behavior settings - tweaked for optimal performance
   API_BATCH_SIZE: parseInt(process.env.API_BATCH_SIZE) || 2500,     // How many records per batch
@@ -138,10 +138,18 @@ class GoogleAdsUploader {
     // Set up our brand-specific upload lists
     this.brandLists = {
       'MASTER': config.MASTER_USER_LIST_ID,
-      'BBT': config.BBT_USER_LIST_ID,
-      'ATD': config.ATD_USER_LIST_ID, 
-      'TW': config.TW_USER_LIST_ID,
-      'RT': config.RT_USER_LIST_ID
+      'BBT': config.BBT_USER_LIST_ID,      // Big Brand Tire & Service
+      'ATD': config.ATD_USER_LIST_ID,      // American Tire Depot
+      'TW': config.TW_USER_LIST_ID,        // Tire World, Inc
+      'RT': config.RT_USER_LIST_ID         // RT brand (if applicable)
+    };
+    
+    // Map the actual brand names from SQL to our internal codes
+    this.brandMapping = {
+      'Big Brand Tire & Service': 'BBT',
+      'American Tire Depot': 'ATD',
+      'Tire World, Inc': 'TW',
+      'default': 'MASTER'  // Fallback for customers without specific brand
     };
     
     // Track operations by list so we can upload to multiple lists
@@ -245,8 +253,8 @@ class GoogleAdsUploader {
       request.input('FullUpload', sql.Bit, fullUploadValue);
       logger.info(`Executing stored procedure with @FullUpload = ${fullUploadValue}`);
       
-      // Execute the stored procedure - Using the existing one
-      const result = await request.execute('dbo.GetNewCustomersForGoogleAds');
+      // Execute the stored procedure - Using the one with brand information
+      const result = await request.execute('dbo.GetNewCustomersForGoogleAdsWithBrandInfo');
       logger.info("Stored procedure executed. Processing results...");
       
       // Process the data
@@ -283,7 +291,7 @@ class GoogleAdsUploader {
       const stateCodeRaw = row.StateCode ? row.StateCode.trim() : null;
       
       // Get the brand from SQL - this determines which lists this customer goes into
-      const brandRaw = row.Brand ? row.Brand.trim().toUpperCase() : null;
+      const brandRaw = row.BrandId ? row.BrandId.trim() : null;
       
       // Initialize variables for hashed identifiers
       let hashedEmail = null;
@@ -372,9 +380,12 @@ class GoogleAdsUploader {
           // Every customer goes to the master list
           this.operationsByList.MASTER.push(operation);
           
-          // If customer has a specific brand, also add them to that brand's list
-          if (brandRaw && this.operationsByList[brandRaw] && this.brandLists[brandRaw]) {
-            this.operationsByList[brandRaw].push(operation);
+          // Map the brand name to our internal code and add to brand-specific list
+          if (brandRaw && this.brandMapping[brandRaw]) {
+            const brandCode = this.brandMapping[brandRaw];
+            if (this.operationsByList[brandCode] && this.brandLists[brandCode]) {
+              this.operationsByList[brandCode].push(operation);
+            }
           }
           
           // Keep track for legacy compatibility
