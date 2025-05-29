@@ -67,7 +67,6 @@ const DEFAULT_CONFIG = {
   BBT_USER_LIST_ID: process.env.BBT_USER_LIST_ID || "",  // "Big Brand Tire & Service" customers
   ATD_USER_LIST_ID: process.env.ATD_USER_LIST_ID || "",  // "American Tire Depot" customers  
   TW_USER_LIST_ID: process.env.TW_USER_LIST_ID || "",    // "Tire World, Inc" customers
-  RT_USER_LIST_ID: process.env.RT_USER_LIST_ID || "",    // RT brand customers (if you have this brand)
   
   // API behavior settings - tweaked for optimal performance
   API_BATCH_SIZE: parseInt(process.env.API_BATCH_SIZE) || 2500,     // How many records per batch
@@ -140,8 +139,7 @@ class GoogleAdsUploader {
       'MASTER': config.MASTER_USER_LIST_ID,
       'BBT': config.BBT_USER_LIST_ID,      // Big Brand Tire & Service
       'ATD': config.ATD_USER_LIST_ID,      // American Tire Depot
-      'TW': config.TW_USER_LIST_ID,        // Tire World, Inc
-      'RT': config.RT_USER_LIST_ID         // RT brand (if applicable)
+      'TW': config.TW_USER_LIST_ID         // Tire World, Inc
     };
     
     // Map the actual brand names from SQL to our internal codes
@@ -157,15 +155,13 @@ class GoogleAdsUploader {
       'MASTER': [],
       'BBT': [],
       'ATD': [],
-      'TW': [],
-      'RT': []
+      'TW': []
     };
     
     logger.info(`Master list ID: ${this.brandLists.MASTER}`);
     if (config.BBT_USER_LIST_ID) logger.info(`BBT list ID: ${this.brandLists.BBT}`);
     if (config.ATD_USER_LIST_ID) logger.info(`ATD list ID: ${this.brandLists.ATD}`);
     if (config.TW_USER_LIST_ID) logger.info(`TW list ID: ${this.brandLists.TW}`);
-    if (config.RT_USER_LIST_ID) logger.info(`RT list ID: ${this.brandLists.RT}`);
   }
 
   /**
