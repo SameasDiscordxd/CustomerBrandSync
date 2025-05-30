@@ -1,115 +1,68 @@
-# Google Ads Customer Data Upload Tool
+# Google Ads Customer Segmentation Uploader
 
-This Node.js tool automates the upload of customer data to Google Ads for Customer Match audiences, supporting both full and incremental (delta) uploads with brand-specific targeting capabilities.
+Automated tool for uploading customer data to Google Ads audience lists with advanced segmentation.
 
 ## Features
 
-- Brand-specific targeting capabilities
-- Automatic dependency management
-- Retry logic for handling concurrent modification errors
-- Rate limiting to prevent API rate limits
-- Support for email, phone, and address-based matching
+- **18 Audience Lists**: 6 segments across 3 brands (BBT, ATD, TW)
+- **Multi-Account Support**: Uploads to separate brand Google Ads accounts
+- **Advanced Segmentation**: Tire, Service, Lapsed, Repeat, Non-Customer segments
+- **Full & Delta Uploads**: Initial setup and ongoing maintenance modes
+- **Automated Tracking**: Database logging for all uploads
+
+## Customer Segments
+
+**ALL** - All customers for the brand
+**TIRE** - Customers who purchased tires (PartTypeId = 13688)
+**SERVICE** - Customers who used services (LAB parts or non-tire items)
+**LAPSED** - Customers with no purchases in 15+ months
+**NON_CUSTOMER** - Email subscribers who haven't made purchases
+**REPEAT** - Customers with multiple visits
 
 ## Setup
 
-1. **Install Dependencies**:
-   ```
-   npm install
-   ```
-
-2. **Configure Environment Variables**:
-   - Copy `.env.example` to `.env`
-   - Fill in your database credentials and Google Ads API information
-   - Add brand-specific user list IDs as needed
-
-   ```
-   # Brand-specific example
-   BRANDNAME_USER_LIST_ID=1234567890
-   ```
+1. Copy `.env.example` to `.env`
+2. Add your Google Ads API credentials
+3. Add Customer IDs for each brand account
+4. Create 18 audience lists in Google Ads and add their IDs
+5. Update the stored procedure in your database
 
 ## Usage
 
-### Basic Usage
-
-Run a delta upload (only new customers):
-```
-node googleAdsUploader.js
+**Initial Setup** (populate all lists):
+```bash
+node segmented-googleAdsUploader.js --mode full
 ```
 
-Run a full upload (all customers):
-```
-node googleAdsUploader.js --mode full
-```
-
-### Brand-Specific Uploads
-
-Upload only customers for a specific brand:
-```
-node googleAdsUploader.js --brand brandname
+**Daily/Monthly Updates** (only new/changed customers):
+```bash
+node segmented-googleAdsUploader.js --mode delta
 ```
 
-Upload for all brands at once (processes each brand sequentially):
-```
-node googleAdsUploader.js --all-brands
-```
-
-### Listing Available Configurations
-
-List configured brands:
-```
-node googleAdsUploader.js --list-brands
+**Test Run** (process data without uploading):
+```bash
+node segmented-googleAdsUploader.js --dry-run
 ```
 
-List available Google Ads user lists:
-```
-node googleAdsUploader.js --list-user-lists
-```
-
-### Creating Brand-Specific Lists
-
-Create a new user list for a brand:
-```
-node googleAdsUploader.js --create-brand-list brandname
+**Brand-Specific Upload**:
+```bash
+node segmented-googleAdsUploader.js --brand BBT
 ```
 
-## Automatic Uploads
+## Requirements
 
-This tool provides two methods for automating uploads:
+- Node.js
+- Google Ads API access
+- SQL Server database with required stored procedure
+- Customer lists created in Google Ads
 
-### 1. Built-in Scheduler
+## Database
 
-Use the included scheduler script for flexible automated uploads:
+Uses stored procedure: `GetNewCustomersForGoogleAdsWithBrandInfo`
+Updates tracking in: `GoogleAdsUploadTracking` table
 
-```
-node schedule-upload.js
-```
+## Brand Coverage
 
-The scheduler runs in the background and executes uploads based on your configured schedules. Edit `schedule-upload.js` to customize:
-- Default schedule (runs at 2 AM daily for all brands)
-- Brand-specific schedules (run different brands at different times)
-- Upload modes (delta or full)
-
-### 2. System Cron Jobs
-
-Alternatively, use system cron jobs for direct scheduling:
-
-Example crontab entry (run daily at 2 AM):
-```
-0 2 * * * cd /path/to/tool && node googleAdsUploader.js --all-brands --silent >> uploads.log 2>&1
-```
-
-Example for specific brands:
-```
-0 1 * * * cd /path/to/tool && node googleAdsUploader.js --brand brandname --silent >> brand_uploads.log 2>&1
-```
-
-## Database Requirements
-
-The tool expects the following stored procedures to be available in your database:
-
-- `dbo.GetNewCustomersForGoogleAds`: For regular customer data retrieval
-- `dbo.GetNewCustomersForGoogleAdsByBrand`: For brand-specific customer data retrieval
-
-## Logging
-
-Logs are saved to `googleAdsUploader.log` and also output to the console.
+- **Big Brand Tire (BBT)**: ~968K customers
+- **American Tire Depot (ATD)**: ~881K customers  
+- **Tire World (TW)**: ~69K customers
