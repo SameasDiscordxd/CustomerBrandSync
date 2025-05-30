@@ -1,0 +1,196 @@
+-- Optimized version for the Node.js script
+-- Always returns ALL segments with flags, script does the filtering
+
+ALTER PROCEDURE [dbo].[GetNewCustomersForGoogleAdsWithBrandInfo] 
+    @FullUpload BIT = 0 -- Only parameter needed for the script
+AS
+/*
+=============================================
+SCRIPT-OPTIMIZED VERSION
+Description: Always returns all customer data with segment flags
+             Node.js script handles filtering and list assignment
+=============================================
+*/
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @LastUploadDate DATETIME
+    DECLARE @RowsProcessed INT = 0
+    
+    -- Get the last upload date
+    SELECT @LastUploadDate = MAX(LastUploadDate)
+    FROM dbo.GoogleAdsUploadTracking
+    WHERE SuccessFlag = 1
+    
+    -- If last upload date is NULL, set a default value (30 days ago)
+    IF @LastUploadDate IS NULL
+        SET @LastUploadDate = DATEADD(day, -30, GETDATE());
+
+    -- Build comprehensive customer segments with brand information
+    WITH CustomerBase AS (
+        SELECT DISTINCT
+            c.CustomerNumber,
+            c.FirstName,
+            c.LastName,
+            c.ContactGUID,
+            ih.CustomerEmail,
+            ih.CustomerPhoneNumber,
+            ih.CustomerZipCode,
+            ih.CustomerState AS StateCode,
+            COALESCE(sb.Name, 'default') AS BrandId,
+            ih.InvoicedDate,
+            ii.PartTypeId,
+            id.PartNumber,
+            c.AddDate,
+            c.ChangeDate,
+            -- Tire customer flag (PartTypeId = 13688 for tire purchases)
+            CASE WHEN ii.PartTypeId = 13688 THEN 1 ELSE 0 END AS IsTirePurchase,
+            -- Service customer flag (LAB prefix OR non-tire parts)
+            CASE WHEN LEFT(id.PartNumber, 3) = 'LAB' OR (ii.PartTypeId IS NOT NULL AND ii.PartTypeId != 13688) THEN 1 ELSE 0 END AS IsServicePurchase
+        FROM
+            dbo.Customer AS c
+        INNER JOIN
+            dbo.InvoiceHeader AS ih ON c.Id = ih.CustomerId
+        INNER JOIN
+            dbo.InvoiceDetail AS id ON ih.Id = id.InvoiceHeaderId
+        LEFT JOIN
+            dbo.Store AS s ON ih.StoreId = s.Id
+        LEFT JOIN
+            dbo.StoreBrand AS sb ON s.StoreBrandId = sb.Id
+        LEFT JOIN
+            dbo.InventoryItem AS ii ON id.ItemId = ii.ItemId
+        WHERE 
+            COALESCE(sb.Name, 'default') IN ('Big Brand Tire', 'American Tire Depot', 'Tire World', 'Robertson Tire', 'Tires To You')
+            AND ((ih.CustomerEmail IS NOT NULL AND ih.CustomerEmail <> '')
+                OR (ih.CustomerPhoneNumber IS NOT NULL AND ih.CustomerPhoneNumber <> ''))
+    ),
+
+    CustomerSegments AS (
+        SELECT 
+            CustomerNumber,
+            FirstName,
+            LastName,
+            ContactGUID,
+            CustomerEmail,
+            CustomerPhoneNumber,
+            CustomerZipCode,
+            StateCode,
+            BrandId,
+            AddDate,
+            ChangeDate,
+            -- Customer type flags
+            MAX(IsTirePurchase) AS IsTireCustomer,
+            MAX(IsServicePurchase) AS IsServiceCustomer,
+            -- Recency analysis
+            MAX(InvoicedDate) AS LastPurchaseDate,
+            COUNT(DISTINCT InvoicedDate) AS TotalVisits,
+            DATEDIFF(MONTH, MAX(InvoicedDate), GETDATE()) AS MonthsSinceLastPurchase,
+            -- Repeat customer flag (more than 1 visit)
+            CASE WHEN COUNT(DISTINCT InvoicedDate) > 1 THEN 1 ELSE 0 END AS IsRepeatCustomer,
+            -- Lapsed customer flag (15+ months since last purchase)
+            CASE WHEN DATEDIFF(MONTH, MAX(InvoicedDate), GETDATE()) >= 15 THEN 1 ELSE 0 END AS IsLapsedCustomer
+        FROM CustomerBase
+        GROUP BY 
+            CustomerNumber, FirstName, LastName, ContactGUID, 
+            CustomerEmail, CustomerPhoneNumber, CustomerZipCode, StateCode, BrandId,
+            AddDate, ChangeDate
+    ),
+
+    -- Email subscribers who are not customers
+    NonCustomers AS (
+        SELECT DISTINCT
+            mc.Email AS CustomerEmail,
+            mc.FirstName,
+            mc.LastName,
+            'Non-Customer' AS CustomerNumber,
+            NULL AS ContactGUID,
+            NULL AS CustomerPhoneNumber,
+            NULL AS CustomerZipCode,
+            NULL AS StateCode,
+            COALESCE(mc.PreferredBrand, 'default') AS BrandId,
+            mc.AddDate,
+            mc.ChangeDate,
+            0 AS IsTireCustomer,
+            0 AS IsServiceCustomer,
+            NULL AS LastPurchaseDate,
+            0 AS TotalVisits,
+            NULL AS MonthsSinceLastPurchase,
+            0 AS IsRepeatCustomer,
+            0 AS IsLapsedCustomer,
+            1 AS IsNonCustomer
+        FROM dbo.MailChimp mc
+        WHERE mc.MC_Status = 'subscribed' 
+          AND (mc.VenomCustomerId = 0 OR mc.VenomCustomerId IS NULL)
+          AND mc.PreferredBrand IN ('Big Brand Tire', 'American Tire Depot', 'Tire World', 'Robertson Tire', 'Tires To You')
+    )
+
+    -- Return ALL customer data with segment flags - let script handle filtering
+    SELECT DISTINCT
+        BrandId,
+        CustomerNumber,
+        FirstName,
+        LastName,
+        ContactGUID,
+        CustomerEmail,
+        CustomerPhoneNumber,
+        CustomerZipCode,
+        StateCode,
+        LastPurchaseDate,
+        TotalVisits,
+        MonthsSinceLastPurchase,
+        -- All segment flags for script processing
+        COALESCE(cs.IsTireCustomer, nc.IsTireCustomer, 0) AS IsTireCustomer,
+        COALESCE(cs.IsServiceCustomer, nc.IsServiceCustomer, 0) AS IsServiceCustomer,
+        COALESCE(cs.IsRepeatCustomer, nc.IsRepeatCustomer, 0) AS IsRepeatCustomer,
+        COALESCE(cs.IsLapsedCustomer, nc.IsLapsedCustomer, 0) AS IsLapsedCustomer,
+        COALESCE(nc.IsNonCustomer, 0) AS IsNonCustomer,
+        -- Primary segment for logging
+        CASE 
+            WHEN nc.IsNonCustomer = 1 THEN 'Non-Customer'
+            WHEN cs.IsLapsedCustomer = 1 THEN 'Lapsed Customer'
+            WHEN cs.IsTireCustomer = 1 AND cs.IsServiceCustomer = 1 THEN 'Tire & Service Customer'
+            WHEN cs.IsTireCustomer = 1 THEN 'Tire Customer Only'
+            WHEN cs.IsServiceCustomer = 1 THEN 'Service Customer Only'
+            ELSE 'General Customer'
+        END AS PrimarySegment
+    FROM CustomerSegments cs
+    FULL OUTER JOIN NonCustomers nc ON cs.CustomerEmail = nc.CustomerEmail AND cs.BrandId = nc.BrandId
+    WHERE
+        -- Date filtering for delta uploads
+        (
+            @FullUpload = 1 -- If full upload, ignore date filtering
+            OR COALESCE(nc.IsNonCustomer, 0) = 1 -- Always include non-customers for full audience
+            OR (
+                cs.AddDate > @LastUploadDate
+                OR cs.ChangeDate > @LastUploadDate
+            )
+        )
+    ORDER BY BrandId, PrimarySegment, LastName, FirstName;
+
+    -- Simple tracking - script will handle detailed per-list tracking
+    SET @RowsProcessed = @@ROWCOUNT;
+    
+    INSERT INTO dbo.GoogleAdsUploadTracking (
+        LastUploadDate, 
+        UploadDescription, 
+        RowsProcessed, 
+        SuccessFlag,
+        ActualUploadedCount,
+        BrandName,
+        BrandListId,
+        BrandRowsProcessed
+    )
+    VALUES (
+        GETDATE(),
+        CASE 
+            WHEN @FullUpload = 1 THEN 'Full Multi-Segment Upload - Script Processed'
+            ELSE 'Delta Multi-Segment Upload - Script Processed'
+        END,
+        @RowsProcessed,
+        1,
+        @RowsProcessed,
+        'All Brands - Script Processing',
+        NULL,
+        @RowsProcessed
+    );
+
+END

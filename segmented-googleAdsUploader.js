@@ -28,6 +28,8 @@ const defaultConfig = {
   BBT_CUSTOMER_ID: process.env.BBT_CUSTOMER_ID,
   ATD_CUSTOMER_ID: process.env.ATD_CUSTOMER_ID,
   TW_CUSTOMER_ID: process.env.TW_CUSTOMER_ID,
+  RT_CUSTOMER_ID: process.env.RT_CUSTOMER_ID,
+  TTY_CUSTOMER_ID: process.env.TTY_CUSTOMER_ID,
 
   // BBT Brand Lists
   BBT_ALL_USER_LIST_ID: process.env.BBT_ALL_USER_LIST_ID,
@@ -243,7 +245,7 @@ class GoogleAdsSegmentedUploader {
       
       const request = this.dbConn.request();
       request.input('FullUpload', sql.Bit, this.runMode === 'full' ? 1 : 0);
-      request.input('SegmentFilter', sql.VarChar(50), 'ALL');
+      // Remove SegmentFilter parameter - let tool handle all segmentation
       
       // Use your stored procedure
       const result = await request.execute('dbo.GetNewCustomersForGoogleAdsWithBrandInfo');
