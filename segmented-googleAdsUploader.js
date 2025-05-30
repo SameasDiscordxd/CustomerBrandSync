@@ -243,80 +243,10 @@ class GoogleAdsSegmentedUploader {
       
       const request = this.dbConn.request();
       request.input('FullUpload', sql.Bit, this.runMode === 'full' ? 1 : 0);
+      request.input('SegmentFilter', sql.VarChar(50), 'ALL');
       
-      // Use the comprehensive segmentation query
-      const query = `
-        WITH CustomerBase AS (
-          SELECT DISTINCT
-              c.CustomerNumber,
-              c.FirstName,
-              c.LastName,
-              c.ContactGUID,
-              ih.CustomerEmail,
-              ih.CustomerPhoneNumber,
-              ih.CustomerZipCode,
-              ih.CustomerState AS StateCode,
-              COALESCE(sb.Name, 'default') AS BrandId,
-              ih.InvoicedDate,
-              ii.PartTypeId,
-              id.PartNumber,
-              CASE WHEN ii.PartTypeId = 13688 THEN 1 ELSE 0 END AS IsTirePurchase,
-              CASE WHEN LEFT(id.PartNumber, 3) = 'LAB' OR (ii.PartTypeId IS NOT NULL AND ii.PartTypeId != 13688) THEN 1 ELSE 0 END AS IsServicePurchase
-          FROM dbo.Customer AS c
-          INNER JOIN dbo.InvoiceHeader AS ih ON c.Id = ih.CustomerId
-          INNER JOIN dbo.InvoiceDetail AS id ON ih.Id = id.InvoiceHeaderId
-          LEFT JOIN dbo.Store AS s ON ih.StoreId = s.Id
-          LEFT JOIN dbo.StoreBrand AS sb ON s.StoreBrandId = sb.Id
-          LEFT JOIN dbo.InventoryItem AS ii ON id.ItemId = ii.ItemId
-          WHERE 
-              ((ih.CustomerEmail IS NOT NULL AND ih.CustomerEmail <> '')
-              OR (ih.CustomerPhoneNumber IS NOT NULL AND ih.CustomerPhoneNumber <> ''))
-              AND ih.StatusId = 3
-              AND id.Active = 1
-              AND id.Approved = 1
-              AND COALESCE(sb.Name, 'default') IN ('Big Brand Tire', 'American Tire Depot', 'Tire World', 'Robertson Tire', 'Tires To You')
-              AND (@FullUpload = 1 OR c.AddDate > DATEADD(day, -30, GETDATE()) OR c.ChangeDate > DATEADD(day, -30, GETDATE()))
-        ),
-        CustomerSegments AS (
-          SELECT 
-              CustomerNumber, FirstName, LastName, ContactGUID,
-              CustomerEmail, CustomerPhoneNumber, CustomerZipCode, StateCode, BrandId,
-              MAX(IsTirePurchase) AS IsTireCustomer,
-              MAX(IsServicePurchase) AS IsServiceCustomer,
-              MAX(InvoicedDate) AS LastPurchaseDate,
-              COUNT(DISTINCT InvoicedDate) AS TotalVisits,
-              DATEDIFF(MONTH, MAX(InvoicedDate), GETDATE()) AS MonthsSinceLastPurchase,
-              CASE WHEN COUNT(DISTINCT InvoicedDate) > 1 THEN 1 ELSE 0 END AS IsRepeatCustomer,
-              CASE WHEN DATEDIFF(MONTH, MAX(InvoicedDate), GETDATE()) >= 15 THEN 1 ELSE 0 END AS IsLapsedCustomer
-          FROM CustomerBase
-          GROUP BY CustomerNumber, FirstName, LastName, ContactGUID, 
-                   CustomerEmail, CustomerPhoneNumber, CustomerZipCode, StateCode, BrandId
-        ),
-        NonCustomers AS (
-          SELECT DISTINCT
-              'Non-Customer' AS CustomerNumber,
-              mc.FirstName, mc.LastName, NULL AS ContactGUID,
-              mc.Email AS CustomerEmail, NULL AS CustomerPhoneNumber,
-              NULL AS CustomerZipCode, NULL AS StateCode,
-              COALESCE(mc.PreferredBrand, 'default') AS BrandId,
-              0 AS IsTireCustomer, 0 AS IsServiceCustomer,
-              NULL AS LastPurchaseDate, 0 AS TotalVisits,
-              NULL AS MonthsSinceLastPurchase,
-              0 AS IsRepeatCustomer, 0 AS IsLapsedCustomer, 1 AS IsNonCustomer
-          FROM dbo.MailChimp mc
-          WHERE mc.MC_Status = 'subscribed' 
-            AND (mc.VenomCustomerId = 0 OR mc.VenomCustomerId IS NULL)
-            AND (mc.PreferredBrand IN ('Big Brand Tire', 'American Tire Depot', 'Tire World', 'Robertson Tire', 'Tires To You') 
-                 OR mc.PreferredBrand IS NULL OR mc.PreferredBrand = '')
-        )
-        
-        SELECT *, 0 AS IsNonCustomer FROM CustomerSegments
-        UNION ALL
-        SELECT *, IsNonCustomer FROM NonCustomers
-        ORDER BY BrandId, CustomerNumber
-      `;
-
-      const result = await request.query(query);
+      // Use your stored procedure
+      const result = await request.execute('dbo.GetNewCustomersForGoogleAdsWithBrandInfo');
       
       if (!result.recordset || result.recordset.length === 0) {
         logger.warn('No customer data found');
