@@ -1,0 +1,570 @@
+2025-05-30T15:55:04.356Z [INFO]: Configured audience lists:
+2025-05-30T15:55:04.358Z [INFO]: BBT_ALL: 9080505530
+2025-05-30T15:55:04.359Z [INFO]: BBT_TIRE: 9080506007
+2025-05-30T15:55:04.359Z [INFO]: BBT_SERVICE: 9079539925
+2025-05-30T15:55:04.359Z [INFO]: BBT_LAPSED: 9080507210
+2025-05-30T15:55:04.359Z [INFO]: BBT_NON_CUSTOMER: 9081148884
+2025-05-30T15:55:04.360Z [INFO]: BBT_REPEAT: 9081149361
+2025-05-30T15:55:04.360Z [INFO]: ATD_ALL: 9081149991
+2025-05-30T15:55:04.360Z [INFO]: ATD_TIRE: 9079542079
+2025-05-30T15:55:04.361Z [INFO]: ATD_SERVICE: 9080509355
+2025-05-30T15:55:04.361Z [INFO]: ATD_LAPSED: 9081150972
+2025-05-30T15:55:04.361Z [INFO]: ATD_NON_CUSTOMER: 9081151308
+2025-05-30T15:55:04.361Z [INFO]: ATD_REPEAT: 9081151668
+2025-05-30T15:55:04.362Z [INFO]: TW_ALL: 9079545817
+2025-05-30T15:55:04.362Z [INFO]: TW_TIRE: 9079546213
+2025-05-30T15:55:04.362Z [INFO]: TW_SERVICE: 9081154926
+2025-05-30T15:55:04.362Z [INFO]: TW_LAPSED: 9080514113
+2025-05-30T15:55:04.362Z [INFO]: TW_NON_CUSTOMER: 9080514200
+2025-05-30T15:55:04.362Z [INFO]: TW_REPEAT: 9079547371
+2025-05-30T15:55:04.363Z [INFO]: Starting Hybrid Google Ads Upload Tool - Run ID: 1748620504355-edxfw4fqe
+2025-05-30T15:55:04.363Z [INFO]: Mode: delta
+2025-05-30T15:55:04.363Z [INFO]: Target Brand: BBT
+2025-05-30T15:55:04.363Z [INFO]: Target Segment: NON_CUSTOMER
+2025-05-30T15:55:04.363Z [INFO]: Connecting to database: bbtdatanew.privatelink.westus.cloudapp.azure.com:1401
+2025-05-30T15:55:04.364Z [INFO]: Connecting to server: bbtdatanew.privatelink.westus.cloudapp.azure.com, port: 1401
+2025-05-30T15:55:05.049Z [INFO]: Database connection established successfully
+2025-05-30T15:55:05.050Z [INFO]: Fetching segmented customer data from database...
+2025-05-30T15:58:42.257Z [INFO]: Processing 474313 customer records
+2025-05-30T15:58:42.606Z [INFO]: 
+=== SEGMENT COUNTS ===
+2025-05-30T15:58:42.606Z [INFO]: BBT_ALL: 103468 customers
+2025-05-30T15:58:42.607Z [INFO]: BBT_NON_CUSTOMER: 103468 customers
+2025-05-30T15:58:42.607Z [INFO]: ATD_ALL: 370836 customers
+2025-05-30T15:58:42.607Z [INFO]: ATD_TIRE: 1873 customers
+2025-05-30T15:58:42.607Z [INFO]: ATD_SERVICE: 1803 customers
+2025-05-30T15:58:42.607Z [INFO]: ATD_LAPSED: 1193 customers
+2025-05-30T15:58:42.608Z [INFO]: ATD_NON_CUSTOMER: 367712 customers
+2025-05-30T15:58:42.608Z [INFO]: ATD_REPEAT: 890 customers
+2025-05-30T15:58:42.608Z [INFO]: =====================
+2025-05-30T15:58:42.609Z [INFO]: 
+=== Uploading 103468 customers to BBT_NON_CUSTOMER (ID: 9081148884) ===
+2025-05-30T15:58:42.609Z [INFO]: Creating CSV file for BBT_NON_CUSTOMER...
+2025-05-30T15:58:42.677Z [INFO]: Created CSV with 103468 customers: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748620722610.csv
+2025-05-30T15:58:42.678Z [INFO]: Calling Python script for upload...
+2025-05-30T15:58:42.678Z [INFO]: Executing: python C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py --customer-id 4018470779 --list-id 9081148884 --csv-file C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748620722610.csv --segment-name BBT_NON_CUSTOMER
+2025-05-30T15:58:42.763Z [WARN]: Python stderr: python: can't open file 'C:\\Users\\Joshua.Sartin\\Desktop\\CustomerBrandSync\\your_python_uploader.py': [Errno 2] No such file or directory
+2025-05-30T15:58:42.771Z [ERROR]: ❌ Python script failed with code 2
+2025-05-30T15:58:42.771Z [ERROR]: Python upload failed for BBT_NON_CUSTOMER: Python script failed: python: can't open file 'C:\\Users\\Joshua.Sartin\\Desktop\\CustomerBrandSync\\your_python_uploader.py': [Errno 2] No such file or directory
+
+2025-05-30T15:58:42.772Z [ERROR]: Error uploading to BBT_NON_CUSTOMER: Python script failed: python: can't open file 'C:\\Users\\Joshua.Sartin\\Desktop\\CustomerBrandSync\\your_python_uploader.py': [Errno 2] No such file or directory
+
+2025-05-30T15:58:43.077Z [INFO]: Tracking record updated for BBT_NON_CUSTOMER: 103468 operations
+2025-05-30T16:02:52.405Z [INFO]: Configured audience lists:
+2025-05-30T16:02:52.410Z [INFO]: BBT_ALL: 9080505530
+2025-05-30T16:02:52.411Z [INFO]: BBT_TIRE: 9080506007
+2025-05-30T16:02:52.411Z [INFO]: BBT_SERVICE: 9079539925
+2025-05-30T16:02:52.411Z [INFO]: BBT_LAPSED: 9080507210
+2025-05-30T16:02:52.412Z [INFO]: BBT_NON_CUSTOMER: 9081148884
+2025-05-30T16:02:52.412Z [INFO]: BBT_REPEAT: 9081149361
+2025-05-30T16:02:52.412Z [INFO]: ATD_ALL: 9081149991
+2025-05-30T16:02:52.413Z [INFO]: ATD_TIRE: 9079542079
+2025-05-30T16:02:52.413Z [INFO]: ATD_SERVICE: 9080509355
+2025-05-30T16:02:52.414Z [INFO]: ATD_LAPSED: 9081150972
+2025-05-30T16:02:52.414Z [INFO]: ATD_NON_CUSTOMER: 9081151308
+2025-05-30T16:02:52.414Z [INFO]: ATD_REPEAT: 9081151668
+2025-05-30T16:02:52.414Z [INFO]: TW_ALL: 9079545817
+2025-05-30T16:02:52.414Z [INFO]: TW_TIRE: 9079546213
+2025-05-30T16:02:52.414Z [INFO]: TW_SERVICE: 9081154926
+2025-05-30T16:02:52.415Z [INFO]: TW_LAPSED: 9080514113
+2025-05-30T16:02:52.415Z [INFO]: TW_NON_CUSTOMER: 9080514200
+2025-05-30T16:02:52.415Z [INFO]: TW_REPEAT: 9079547371
+2025-05-30T16:02:52.415Z [INFO]: Starting Hybrid Google Ads Upload Tool - Run ID: 1748620972404-yaiyxyw5q
+2025-05-30T16:02:52.415Z [INFO]: Mode: delta
+2025-05-30T16:02:52.416Z [INFO]: Target Brand: BBT
+2025-05-30T16:02:52.416Z [INFO]: Target Segment: NON_CUSTOMER
+2025-05-30T16:02:52.416Z [INFO]: Connecting to database: bbtdatanew.privatelink.westus.cloudapp.azure.com:1401
+2025-05-30T16:02:52.417Z [INFO]: Connecting to server: bbtdatanew.privatelink.westus.cloudapp.azure.com, port: 1401
+2025-05-30T16:02:52.991Z [INFO]: Database connection established successfully
+2025-05-30T16:02:52.991Z [INFO]: Fetching segmented customer data from database...
+2025-05-30T16:06:06.317Z [INFO]: Processing 474318 customer records
+2025-05-30T16:06:06.662Z [INFO]: 
+=== SEGMENT COUNTS ===
+2025-05-30T16:06:06.664Z [INFO]: BBT_ALL: 103468 customers
+2025-05-30T16:06:06.665Z [INFO]: BBT_NON_CUSTOMER: 103468 customers
+2025-05-30T16:06:06.666Z [INFO]: ATD_ALL: 370840 customers
+2025-05-30T16:06:06.666Z [INFO]: ATD_TIRE: 1874 customers
+2025-05-30T16:06:06.667Z [INFO]: ATD_SERVICE: 1803 customers
+2025-05-30T16:06:06.668Z [INFO]: ATD_LAPSED: 1194 customers
+2025-05-30T16:06:06.668Z [INFO]: ATD_NON_CUSTOMER: 367712 customers
+2025-05-30T16:06:06.668Z [INFO]: ATD_REPEAT: 890 customers
+2025-05-30T16:06:06.669Z [INFO]: =====================
+2025-05-30T16:06:06.670Z [INFO]: 
+=== Uploading 103468 customers to BBT_NON_CUSTOMER (ID: 9081148884) ===
+2025-05-30T16:06:06.671Z [INFO]: Creating CSV file for BBT_NON_CUSTOMER...
+2025-05-30T16:06:06.789Z [INFO]: Created CSV with 103468 customers: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748621166672.csv
+2025-05-30T16:06:06.790Z [INFO]: Calling Python script for upload...
+2025-05-30T16:06:06.792Z [INFO]: Executing: python C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py --customer-id 4018470779 --list-id 9081148884 --csv-file C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748621166672.csv --segment-name BBT_NON_CUSTOMER
+2025-05-30T16:06:09.624Z [WARN]: Python stderr: Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 261, in <module>
+2025-05-30T16:06:09.626Z [WARN]: Python stderr: main()
+2025-05-30T16:06:09.626Z [WARN]: Python stderr: File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 215, in main
+2025-05-30T16:06:09.629Z [WARN]: Python stderr: print(f"\U0001f680 Google Ads Customer Upload Tool")
+2025-05-30T16:06:09.630Z [WARN]: Python stderr: File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+2025-05-30T16:06:09.635Z [WARN]: Python stderr: return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+2025-05-30T16:06:09.636Z [WARN]: Python stderr: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f680' in position 0: character maps to <undefined>
+2025-05-30T16:06:09.725Z [ERROR]: ❌ Python script failed with code 1
+2025-05-30T16:06:09.726Z [ERROR]: Python upload failed for BBT_NON_CUSTOMER: Python script failed: Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 261, in <module>
+    main()
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 215, in main
+    print(f"\U0001f680 Google Ads Customer Upload Tool")
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f680' in position 0: character maps to <undefined>
+
+2025-05-30T16:06:09.729Z [ERROR]: Error uploading to BBT_NON_CUSTOMER: Python script failed: Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 261, in <module>
+    main()
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 215, in main
+    print(f"\U0001f680 Google Ads Customer Upload Tool")
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f680' in position 0: character maps to <undefined>
+
+2025-05-30T16:06:10.039Z [INFO]: Tracking record updated for BBT_NON_CUSTOMER: 103468 operations
+2025-05-30T16:19:55.958Z [INFO]: Configured audience lists:
+2025-05-30T16:19:55.961Z [INFO]: BBT_ALL: 9080505530
+2025-05-30T16:19:55.961Z [INFO]: BBT_TIRE: 9080506007
+2025-05-30T16:19:55.962Z [INFO]: BBT_SERVICE: 9079539925
+2025-05-30T16:19:55.962Z [INFO]: BBT_LAPSED: 9080507210
+2025-05-30T16:19:55.962Z [INFO]: BBT_NON_CUSTOMER: 9081148884
+2025-05-30T16:19:55.963Z [INFO]: BBT_REPEAT: 9081149361
+2025-05-30T16:19:55.963Z [INFO]: ATD_ALL: 9081149991
+2025-05-30T16:19:55.963Z [INFO]: ATD_TIRE: 9079542079
+2025-05-30T16:19:55.964Z [INFO]: ATD_SERVICE: 9080509355
+2025-05-30T16:19:55.966Z [INFO]: ATD_LAPSED: 9081150972
+2025-05-30T16:19:55.966Z [INFO]: ATD_NON_CUSTOMER: 9081151308
+2025-05-30T16:19:55.966Z [INFO]: ATD_REPEAT: 9081151668
+2025-05-30T16:19:55.966Z [INFO]: TW_ALL: 9079545817
+2025-05-30T16:19:55.966Z [INFO]: TW_TIRE: 9079546213
+2025-05-30T16:19:55.967Z [INFO]: TW_SERVICE: 9081154926
+2025-05-30T16:19:55.967Z [INFO]: TW_LAPSED: 9080514113
+2025-05-30T16:19:55.967Z [INFO]: TW_NON_CUSTOMER: 9080514200
+2025-05-30T16:19:55.968Z [INFO]: TW_REPEAT: 9079547371
+2025-05-30T16:19:55.968Z [INFO]: Starting Hybrid Google Ads Upload Tool - Run ID: 1748621995958-lrcaesgeq
+2025-05-30T16:19:55.968Z [INFO]: Mode: delta
+2025-05-30T16:19:55.969Z [INFO]: Target Brand: BBT
+2025-05-30T16:19:55.969Z [INFO]: Target Segment: NON_CUSTOMER
+2025-05-30T16:19:55.970Z [INFO]: Connecting to database: bbtdatanew.privatelink.westus.cloudapp.azure.com:1401
+2025-05-30T16:19:55.970Z [INFO]: Connecting to server: bbtdatanew.privatelink.westus.cloudapp.azure.com, port: 1401
+2025-05-30T16:19:56.702Z [INFO]: Database connection established successfully
+2025-05-30T16:19:56.703Z [INFO]: Fetching segmented customer data from database...
+2025-05-30T16:21:52.907Z [INFO]: Processing 474345 customer records
+2025-05-30T16:21:53.481Z [INFO]: 
+=== SEGMENT COUNTS ===
+2025-05-30T16:21:53.482Z [INFO]: BBT_ALL: 103468 customers
+2025-05-30T16:21:53.484Z [INFO]: BBT_NON_CUSTOMER: 103468 customers
+2025-05-30T16:21:53.485Z [INFO]: ATD_ALL: 370863 customers
+2025-05-30T16:21:53.486Z [INFO]: ATD_TIRE: 1889 customers
+2025-05-30T16:21:53.487Z [INFO]: ATD_SERVICE: 1811 customers
+2025-05-30T16:21:53.488Z [INFO]: ATD_LAPSED: 1193 customers
+2025-05-30T16:21:53.488Z [INFO]: ATD_NON_CUSTOMER: 367712 customers
+2025-05-30T16:21:53.489Z [INFO]: ATD_REPEAT: 892 customers
+2025-05-30T16:21:53.490Z [INFO]: =====================
+2025-05-30T16:21:53.492Z [INFO]: 
+=== Uploading 103468 customers to BBT_NON_CUSTOMER (ID: 9081148884) ===
+2025-05-30T16:21:53.493Z [INFO]: Creating CSV file for BBT_NON_CUSTOMER...
+2025-05-30T16:21:53.657Z [INFO]: Created CSV with 103468 customers: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748622113494.csv
+2025-05-30T16:21:53.657Z [INFO]: Calling Python script for upload...
+2025-05-30T16:21:53.660Z [INFO]: Executing: python C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py --customer-id 4018470779 --list-id 9081148884 --csv-file C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748622113494.csv --segment-name BBT_NON_CUSTOMER
+2025-05-30T16:21:59.192Z [INFO]: Python: Google Ads Customer Upload Tool
+   Customer ID: 4018470779
+   List ID: 9081148884
+   CSV File: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748622113494.csv
+   Segment: BBT_NON_CUSTOMER
+
+✅ Google Ads client initialized successfully
+✅ Read 103468 customers from CSV file
+2025-05-30T16:21:59.194Z [WARN]: Python stderr: Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 198, in _get_api_services_by_version
+2025-05-30T16:21:59.199Z [WARN]: Python stderr: version_module = import_module(f"google.ads.googleads.{version}")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py", line 90, in import_module
+2025-05-30T16:21:59.207Z [WARN]: Python stderr: return _bootstrap._gcd_import(name[level:], package, level)
+2025-05-30T16:21:59.209Z [WARN]: Python stderr: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named "google.ads.googleads.{'hashed_email': '237ea4d562b5da1d24537638488c74fd34b269e5ba28e42c8eb526220bd186b4'}"
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 267, in <module>
+2025-05-30T16:21:59.210Z [WARN]: Python stderr: main()
+2025-05-30T16:21:59.211Z [WARN]: Python stderr: File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 244, in main
+2025-05-30T16:21:59.212Z [WARN]: Python stderr: operations = uploader.create_user_data_operations(customers)
+2025-05-30T16:21:59.216Z [WARN]: Python stderr: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 125, in create_user_data_operations
+    self.client.get_type("UserIdentifier", ui) for ui in user_identifiers
+2025-05-30T16:21:59.218Z [WARN]: Python stderr: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 445, in get_type
+2025-05-30T16:21:59.220Z [WARN]: Python stderr: type_classes = self._get_api_services_by_version(version)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 200, in _get_api_services_by_version
+2025-05-30T16:21:59.223Z [WARN]: Python stderr: raise ValueError(
+ValueError: There was an error importing the "google.ads.googleads.{'hashed_email': '237ea4d562b5da1d24537638488c74fd34b269e5ba28e42c8eb526220bd186b4'}" module. Please check that "{'hashed_email': '237ea4d562b5da1d24537638488c74fd34b269e5ba28e42c8eb526220bd186b4'}" is a valid API version. Here are the current API versions supported by this library: v19, v18, v17.
+2025-05-30T16:21:59.647Z [ERROR]: ❌ Python script failed with code 1
+2025-05-30T16:21:59.649Z [ERROR]: Python upload failed for BBT_NON_CUSTOMER: Python script failed: Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 198, in _get_api_services_by_version
+    version_module = import_module(f"google.ads.googleads.{version}")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named "google.ads.googleads.{'hashed_email': '237ea4d562b5da1d24537638488c74fd34b269e5ba28e42c8eb526220bd186b4'}"
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 267, in <module>
+    main()
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 244, in main
+    operations = uploader.create_user_data_operations(customers)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 125, in create_user_data_operations
+    self.client.get_type("UserIdentifier", ui) for ui in user_identifiers
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 445, in get_type
+    type_classes = self._get_api_services_by_version(version)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 200, in _get_api_services_by_version
+    raise ValueError(
+ValueError: There was an error importing the "google.ads.googleads.{'hashed_email': '237ea4d562b5da1d24537638488c74fd34b269e5ba28e42c8eb526220bd186b4'}" module. Please check that "{'hashed_email': '237ea4d562b5da1d24537638488c74fd34b269e5ba28e42c8eb526220bd186b4'}" is a valid API version. Here are the current API versions supported by this library: v19, v18, v17.
+
+2025-05-30T16:21:59.653Z [ERROR]: Error uploading to BBT_NON_CUSTOMER: Python script failed: Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 198, in _get_api_services_by_version
+    version_module = import_module(f"google.ads.googleads.{version}")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named "google.ads.googleads.{'hashed_email': '237ea4d562b5da1d24537638488c74fd34b269e5ba28e42c8eb526220bd186b4'}"
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 267, in <module>
+    main()
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 244, in main
+    operations = uploader.create_user_data_operations(customers)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 125, in create_user_data_operations
+    self.client.get_type("UserIdentifier", ui) for ui in user_identifiers
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 445, in get_type
+    type_classes = self._get_api_services_by_version(version)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 200, in _get_api_services_by_version
+    raise ValueError(
+ValueError: There was an error importing the "google.ads.googleads.{'hashed_email': '237ea4d562b5da1d24537638488c74fd34b269e5ba28e42c8eb526220bd186b4'}" module. Please check that "{'hashed_email': '237ea4d562b5da1d24537638488c74fd34b269e5ba28e42c8eb526220bd186b4'}" is a valid API version. Here are the current API versions supported by this library: v19, v18, v17.
+
+2025-05-30T16:21:59.968Z [INFO]: Tracking record updated for BBT_NON_CUSTOMER: 103468 operations
+2025-05-30T16:29:23.077Z [INFO]: Configured audience lists:
+2025-05-30T16:29:23.078Z [INFO]: BBT_ALL: 9080505530
+2025-05-30T16:29:23.079Z [INFO]: BBT_TIRE: 9080506007
+2025-05-30T16:29:23.079Z [INFO]: BBT_SERVICE: 9079539925
+2025-05-30T16:29:23.079Z [INFO]: BBT_LAPSED: 9080507210
+2025-05-30T16:29:23.079Z [INFO]: BBT_NON_CUSTOMER: 9081148884
+2025-05-30T16:29:23.080Z [INFO]: BBT_REPEAT: 9081149361
+2025-05-30T16:29:23.080Z [INFO]: ATD_ALL: 9081149991
+2025-05-30T16:29:23.080Z [INFO]: ATD_TIRE: 9079542079
+2025-05-30T16:29:23.080Z [INFO]: ATD_SERVICE: 9080509355
+2025-05-30T16:29:23.081Z [INFO]: ATD_LAPSED: 9081150972
+2025-05-30T16:29:23.081Z [INFO]: ATD_NON_CUSTOMER: 9081151308
+2025-05-30T16:29:23.081Z [INFO]: ATD_REPEAT: 9081151668
+2025-05-30T16:29:23.081Z [INFO]: TW_ALL: 9079545817
+2025-05-30T16:29:23.081Z [INFO]: TW_TIRE: 9079546213
+2025-05-30T16:29:23.081Z [INFO]: TW_SERVICE: 9081154926
+2025-05-30T16:29:23.081Z [INFO]: TW_LAPSED: 9080514113
+2025-05-30T16:29:23.081Z [INFO]: TW_NON_CUSTOMER: 9080514200
+2025-05-30T16:29:23.081Z [INFO]: TW_REPEAT: 9079547371
+2025-05-30T16:29:23.081Z [INFO]: Starting Hybrid Google Ads Upload Tool - Run ID: 1748622563076-6gh0z2517
+2025-05-30T16:29:23.082Z [INFO]: Mode: delta
+2025-05-30T16:29:23.082Z [INFO]: Target Brand: BBT
+2025-05-30T16:29:23.082Z [INFO]: Target Segment: NON_CUSTOMER
+2025-05-30T16:29:23.082Z [INFO]: Connecting to database: bbtdatanew.privatelink.westus.cloudapp.azure.com:1401
+2025-05-30T16:29:23.083Z [INFO]: Connecting to server: bbtdatanew.privatelink.westus.cloudapp.azure.com, port: 1401
+2025-05-30T16:29:23.683Z [INFO]: Database connection established successfully
+2025-05-30T16:29:23.684Z [INFO]: Fetching segmented customer data from database...
+2025-05-30T16:32:01.265Z [INFO]: Processing 474310 customer records
+2025-05-30T16:32:01.550Z [INFO]: 
+=== SEGMENT COUNTS ===
+2025-05-30T16:32:01.551Z [INFO]: BBT_ALL: 103468 customers
+2025-05-30T16:32:01.552Z [INFO]: BBT_NON_CUSTOMER: 103468 customers
+2025-05-30T16:32:01.552Z [INFO]: ATD_ALL: 370833 customers
+2025-05-30T16:32:01.553Z [INFO]: ATD_TIRE: 1872 customers
+2025-05-30T16:32:01.553Z [INFO]: ATD_SERVICE: 1800 customers
+2025-05-30T16:32:01.553Z [INFO]: ATD_LAPSED: 1193 customers
+2025-05-30T16:32:01.554Z [INFO]: ATD_NON_CUSTOMER: 367712 customers
+2025-05-30T16:32:01.554Z [INFO]: ATD_REPEAT: 890 customers
+2025-05-30T16:32:01.554Z [INFO]: =====================
+2025-05-30T16:32:01.555Z [INFO]: 
+=== Uploading 103468 customers to BBT_NON_CUSTOMER (ID: 9081148884) ===
+2025-05-30T16:32:01.556Z [INFO]: Creating CSV file for BBT_NON_CUSTOMER...
+2025-05-30T16:32:01.670Z [INFO]: Created CSV with 103468 customers: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748622721556.csv
+2025-05-30T16:32:01.678Z [INFO]: Calling Python script for upload...
+2025-05-30T16:32:01.679Z [INFO]: Executing: python C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py --customer-id 4018470779 --list-id 9081148884 --csv-file C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748622721556.csv --segment-name BBT_NON_CUSTOMER
+2025-05-30T16:32:04.286Z [INFO]: Python: Google Ads Customer Upload Tool
+   Customer ID: 4018470779
+   List ID: 9081148884
+   CSV File: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748622721556.csv
+   Segment: BBT_NON_CUSTOMER
+2025-05-30T16:32:04.288Z [WARN]: Python stderr: Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 169, in main
+2025-05-30T16:32:04.288Z [WARN]: Python stderr: uploader = GoogleAdsUploader(args.customer_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 15, in __init__
+2025-05-30T16:32:04.290Z [WARN]: Python stderr: self.client = GoogleAdsClient.load_from_env(version="v17")  # Specify API version explicitly
+2025-05-30T16:32:04.291Z [WARN]: Python stderr: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 223, in load_from_env
+2025-05-30T16:32:04.292Z [WARN]: Python stderr: config_data = config.load_from_env()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+2025-05-30T16:32:04.292Z [WARN]: Python stderr: File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\config.py", line 72, in validation_wrapper
+2025-05-30T16:32:04.293Z [WARN]: Python stderr: validate_dict(config_dict)
+2025-05-30T16:32:04.294Z [WARN]: Python stderr: File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\config.py", line 176, in validate_dict
+2025-05-30T16:32:04.295Z [WARN]: Python stderr: raise ValueError(
+ValueError: The client library configuration is missing the required "use_proto_plus" key. Please set this option to either "True" or "False". For more information about this option see the Protobuf Messages guide: https://developers.google.com/google-ads/api/docs/client-libs/python/protobuf-messages
+2025-05-30T16:32:04.296Z [WARN]: Python stderr: During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 196, in <module>
+2025-05-30T16:32:04.298Z [WARN]: Python stderr: main()
+2025-05-30T16:32:04.298Z [WARN]: Python stderr: File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 192, in main
+2025-05-30T16:32:04.300Z [WARN]: Python stderr: print(f"\u274c Fatal error: {str(ex)}")
+2025-05-30T16:32:04.301Z [WARN]: Python stderr: File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+2025-05-30T16:32:04.302Z [WARN]: Python stderr: return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+2025-05-30T16:32:04.302Z [WARN]: Python stderr: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+2025-05-30T16:32:04.423Z [ERROR]: ❌ Python script failed with code 1
+2025-05-30T16:32:04.425Z [ERROR]: Python upload failed for BBT_NON_CUSTOMER: Python script failed: Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 169, in main
+    uploader = GoogleAdsUploader(args.customer_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 15, in __init__
+    self.client = GoogleAdsClient.load_from_env(version="v17")  # Specify API version explicitly
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 223, in load_from_env
+    config_data = config.load_from_env()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\config.py", line 72, in validation_wrapper
+    validate_dict(config_dict)
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\config.py", line 176, in validate_dict
+    raise ValueError(
+ValueError: The client library configuration is missing the required "use_proto_plus" key. Please set this option to either "True" or "False". For more information about this option see the Protobuf Messages guide: https://developers.google.com/google-ads/api/docs/client-libs/python/protobuf-messages
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 196, in <module>
+    main()
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 192, in main
+    print(f"\u274c Fatal error: {str(ex)}")
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+
+2025-05-30T16:32:04.427Z [ERROR]: Error uploading to BBT_NON_CUSTOMER: Python script failed: Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 169, in main
+    uploader = GoogleAdsUploader(args.customer_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 15, in __init__
+    self.client = GoogleAdsClient.load_from_env(version="v17")  # Specify API version explicitly
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\client.py", line 223, in load_from_env
+    config_data = config.load_from_env()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\config.py", line 72, in validation_wrapper
+    validate_dict(config_dict)
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\site-packages\google\ads\googleads\config.py", line 176, in validate_dict
+    raise ValueError(
+ValueError: The client library configuration is missing the required "use_proto_plus" key. Please set this option to either "True" or "False". For more information about this option see the Protobuf Messages guide: https://developers.google.com/google-ads/api/docs/client-libs/python/protobuf-messages
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 196, in <module>
+    main()
+  File "C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py", line 192, in main
+    print(f"\u274c Fatal error: {str(ex)}")
+  File "C:\Users\Joshua.Sartin\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+
+2025-05-30T16:32:04.721Z [INFO]: Tracking record updated for BBT_NON_CUSTOMER: 103468 operations
+2025-05-30T16:34:54.403Z [INFO]: Configured audience lists:
+2025-05-30T16:34:54.405Z [INFO]: BBT_ALL: 9080505530
+2025-05-30T16:34:54.405Z [INFO]: BBT_TIRE: 9080506007
+2025-05-30T16:34:54.406Z [INFO]: BBT_SERVICE: 9079539925
+2025-05-30T16:34:54.406Z [INFO]: BBT_LAPSED: 9080507210
+2025-05-30T16:34:54.406Z [INFO]: BBT_NON_CUSTOMER: 9081148884
+2025-05-30T16:34:54.406Z [INFO]: BBT_REPEAT: 9081149361
+2025-05-30T16:34:54.407Z [INFO]: ATD_ALL: 9081149991
+2025-05-30T16:34:54.407Z [INFO]: ATD_TIRE: 9079542079
+2025-05-30T16:34:54.407Z [INFO]: ATD_SERVICE: 9080509355
+2025-05-30T16:34:54.408Z [INFO]: ATD_LAPSED: 9081150972
+2025-05-30T16:34:54.408Z [INFO]: ATD_NON_CUSTOMER: 9081151308
+2025-05-30T16:34:54.408Z [INFO]: ATD_REPEAT: 9081151668
+2025-05-30T16:34:54.408Z [INFO]: TW_ALL: 9079545817
+2025-05-30T16:34:54.408Z [INFO]: TW_TIRE: 9079546213
+2025-05-30T16:34:54.408Z [INFO]: TW_SERVICE: 9081154926
+2025-05-30T16:34:54.408Z [INFO]: TW_LAPSED: 9080514113
+2025-05-30T16:34:54.408Z [INFO]: TW_NON_CUSTOMER: 9080514200
+2025-05-30T16:34:54.409Z [INFO]: TW_REPEAT: 9079547371
+2025-05-30T16:34:54.409Z [INFO]: Starting Hybrid Google Ads Upload Tool - Run ID: 1748622894403-ui5b1sqcg
+2025-05-30T16:34:54.409Z [INFO]: Mode: delta
+2025-05-30T16:34:54.409Z [INFO]: Target Brand: BBT
+2025-05-30T16:34:54.409Z [INFO]: Target Segment: NON_CUSTOMER
+2025-05-30T16:34:54.410Z [INFO]: Connecting to database: bbtdatanew.privatelink.westus.cloudapp.azure.com:1401
+2025-05-30T16:34:54.410Z [INFO]: Connecting to server: bbtdatanew.privatelink.westus.cloudapp.azure.com, port: 1401
+2025-05-30T16:35:03.860Z [INFO]: Database connection established successfully
+2025-05-30T16:35:03.860Z [INFO]: Fetching segmented customer data from database...
+2025-05-30T16:37:36.901Z [INFO]: Processing 474313 customer records
+2025-05-30T16:37:37.118Z [INFO]: 
+=== SEGMENT COUNTS ===
+2025-05-30T16:37:37.118Z [INFO]: BBT_ALL: 103468 customers
+2025-05-30T16:37:37.118Z [INFO]: BBT_NON_CUSTOMER: 103468 customers
+2025-05-30T16:37:37.119Z [INFO]: ATD_ALL: 370836 customers
+2025-05-30T16:37:37.119Z [INFO]: ATD_TIRE: 1876 customers
+2025-05-30T16:37:37.119Z [INFO]: ATD_SERVICE: 1803 customers
+2025-05-30T16:37:37.119Z [INFO]: ATD_LAPSED: 1193 customers
+2025-05-30T16:37:37.120Z [INFO]: ATD_NON_CUSTOMER: 367712 customers
+2025-05-30T16:37:37.120Z [INFO]: ATD_REPEAT: 890 customers
+2025-05-30T16:37:37.120Z [INFO]: =====================
+2025-05-30T16:37:37.120Z [INFO]: 
+=== Uploading 103468 customers to BBT_NON_CUSTOMER (ID: 9081148884) ===
+2025-05-30T16:37:37.121Z [INFO]: Creating CSV file for BBT_NON_CUSTOMER...
+2025-05-30T16:37:37.178Z [INFO]: Created CSV with 103468 customers: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748623057121.csv
+2025-05-30T16:37:37.179Z [INFO]: Calling Python script for upload...
+2025-05-30T16:37:37.180Z [INFO]: Executing: python C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py --customer-id 4018470779 --list-id 9081148884 --csv-file C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748623057121.csv --segment-name BBT_NON_CUSTOMER
+2025-05-30T16:37:43.198Z [INFO]: Python: Google Ads Customer Upload Tool
+   Customer ID: 4018470779
+   List ID: 9081148884
+   CSV File: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748623057121.csv
+   Segment: BBT_NON_CUSTOMER
+
+[SUCCESS] Google Ads client initialized successfully
+[SUCCESS] Read 103468 customers from CSV file
+[FATAL] Fatal error: 'UserDataOperation' object is not callable
+2025-05-30T16:37:43.492Z [ERROR]: ❌ Python script failed with code 1
+2025-05-30T16:37:43.493Z [ERROR]: Python upload failed for BBT_NON_CUSTOMER: Python script failed: Google Ads Customer Upload Tool
+   Customer ID: 4018470779
+   List ID: 9081148884
+   CSV File: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748623057121.csv
+   Segment: BBT_NON_CUSTOMER
+
+[SUCCESS] Google Ads client initialized successfully
+[SUCCESS] Read 103468 customers from CSV file
+[FATAL] Fatal error: 'UserDataOperation' object is not callable
+
+2025-05-30T16:37:43.498Z [ERROR]: Error uploading to BBT_NON_CUSTOMER: Python script failed: Google Ads Customer Upload Tool
+   Customer ID: 4018470779
+   List ID: 9081148884
+   CSV File: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748623057121.csv
+   Segment: BBT_NON_CUSTOMER
+
+[SUCCESS] Google Ads client initialized successfully
+[SUCCESS] Read 103468 customers from CSV file
+[FATAL] Fatal error: 'UserDataOperation' object is not callable
+
+2025-05-30T16:37:43.832Z [INFO]: Tracking record updated for BBT_NON_CUSTOMER: 103468 operations
+2025-05-30T16:40:57.179Z [INFO]: Configured audience lists:
+2025-05-30T16:40:57.182Z [INFO]: BBT_ALL: 9080505530
+2025-05-30T16:40:57.182Z [INFO]: BBT_TIRE: 9080506007
+2025-05-30T16:40:57.183Z [INFO]: BBT_SERVICE: 9079539925
+2025-05-30T16:40:57.183Z [INFO]: BBT_LAPSED: 9080507210
+2025-05-30T16:40:57.184Z [INFO]: BBT_NON_CUSTOMER: 9081148884
+2025-05-30T16:40:57.184Z [INFO]: BBT_REPEAT: 9081149361
+2025-05-30T16:40:57.184Z [INFO]: ATD_ALL: 9081149991
+2025-05-30T16:40:57.184Z [INFO]: ATD_TIRE: 9079542079
+2025-05-30T16:40:57.185Z [INFO]: ATD_SERVICE: 9080509355
+2025-05-30T16:40:57.185Z [INFO]: ATD_LAPSED: 9081150972
+2025-05-30T16:40:57.186Z [INFO]: ATD_NON_CUSTOMER: 9081151308
+2025-05-30T16:40:57.186Z [INFO]: ATD_REPEAT: 9081151668
+2025-05-30T16:40:57.186Z [INFO]: TW_ALL: 9079545817
+2025-05-30T16:40:57.186Z [INFO]: TW_TIRE: 9079546213
+2025-05-30T16:40:57.186Z [INFO]: TW_SERVICE: 9081154926
+2025-05-30T16:40:57.186Z [INFO]: TW_LAPSED: 9080514113
+2025-05-30T16:40:57.186Z [INFO]: TW_NON_CUSTOMER: 9080514200
+2025-05-30T16:40:57.187Z [INFO]: TW_REPEAT: 9079547371
+2025-05-30T16:40:57.187Z [INFO]: Starting Hybrid Google Ads Upload Tool - Run ID: 1748623257178-jc05c34kh
+2025-05-30T16:40:57.187Z [INFO]: Mode: delta
+2025-05-30T16:40:57.187Z [INFO]: Target Brand: BBT
+2025-05-30T16:40:57.187Z [INFO]: Target Segment: NON_CUSTOMER
+2025-05-30T16:40:57.188Z [INFO]: Connecting to database: bbtdatanew.privatelink.westus.cloudapp.azure.com:1401
+2025-05-30T16:40:57.188Z [INFO]: Connecting to server: bbtdatanew.privatelink.westus.cloudapp.azure.com, port: 1401
+2025-05-30T16:40:59.670Z [INFO]: Database connection established successfully
+2025-05-30T16:40:59.671Z [INFO]: Fetching segmented customer data from database...
+2025-05-30T16:44:15.246Z [INFO]: Processing 474313 customer records
+2025-05-30T16:44:15.718Z [INFO]: 
+=== SEGMENT COUNTS ===
+2025-05-30T16:44:15.719Z [INFO]: BBT_ALL: 103468 customers
+2025-05-30T16:44:15.720Z [INFO]: BBT_NON_CUSTOMER: 103468 customers
+2025-05-30T16:44:15.720Z [INFO]: ATD_ALL: 370835 customers
+2025-05-30T16:44:15.720Z [INFO]: ATD_TIRE: 1874 customers
+2025-05-30T16:44:15.720Z [INFO]: ATD_SERVICE: 1801 customers
+2025-05-30T16:44:15.721Z [INFO]: ATD_LAPSED: 1193 customers
+2025-05-30T16:44:15.721Z [INFO]: ATD_NON_CUSTOMER: 367712 customers
+2025-05-30T16:44:15.721Z [INFO]: ATD_REPEAT: 890 customers
+2025-05-30T16:44:15.721Z [INFO]: =====================
+2025-05-30T16:44:15.722Z [INFO]: 
+=== Uploading 103468 customers to BBT_NON_CUSTOMER (ID: 9081148884) ===
+2025-05-30T16:44:15.722Z [INFO]: Creating CSV file for BBT_NON_CUSTOMER...
+2025-05-30T16:44:15.791Z [INFO]: Created CSV with 103468 customers: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748623455722.csv
+2025-05-30T16:44:15.791Z [INFO]: Calling Python script for upload...
+2025-05-30T16:44:15.792Z [INFO]: Executing: python C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\your_python_uploader.py --customer-id 4018470779 --list-id 9081148884 --csv-file C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748623455722.csv --segment-name BBT_NON_CUSTOMER
+2025-05-30T16:44:29.494Z [INFO]: Python: Google Ads Customer Upload Tool
+   Customer ID: 4018470779
+   List ID: 9081148884
+   CSV File: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748623455722.csv
+   Segment: BBT_NON_CUSTOMER
+
+[SUCCESS] Google Ads client initialized successfully
+[SUCCESS] Read 103468 customers from CSV file
+[SUCCESS] Created 103468 user data operations
+[SUCCESS] Created offline user data job: customers/4018470779/offlineUserDataJobs/47894834361
+[UPLOAD] Uploading batch 1/11 (10000 operations)
+[ERROR] Unexpected error: Parameter to MergeFrom() must be instance of same class: expected <class 'OfflineUserDataJobOperation'> got <class 'google.ads.googleads.v17.services.types.user_data_service.UserDataOperation'>.
+[ERROR] Upload failed for BBT_NON_CUSTOMER
+2025-05-30T16:44:30.061Z [ERROR]: ❌ Python script failed with code 1
+2025-05-30T16:44:30.063Z [ERROR]: Python upload failed for BBT_NON_CUSTOMER: Python script failed: Google Ads Customer Upload Tool
+   Customer ID: 4018470779
+   List ID: 9081148884
+   CSV File: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748623455722.csv
+   Segment: BBT_NON_CUSTOMER
+
+[SUCCESS] Google Ads client initialized successfully
+[SUCCESS] Read 103468 customers from CSV file
+[SUCCESS] Created 103468 user data operations
+[SUCCESS] Created offline user data job: customers/4018470779/offlineUserDataJobs/47894834361
+[UPLOAD] Uploading batch 1/11 (10000 operations)
+[ERROR] Unexpected error: Parameter to MergeFrom() must be instance of same class: expected <class 'OfflineUserDataJobOperation'> got <class 'google.ads.googleads.v17.services.types.user_data_service.UserDataOperation'>.
+[ERROR] Upload failed for BBT_NON_CUSTOMER
+
+2025-05-30T16:44:30.063Z [ERROR]: Error uploading to BBT_NON_CUSTOMER: Python script failed: Google Ads Customer Upload Tool
+   Customer ID: 4018470779
+   List ID: 9081148884
+   CSV File: C:\Users\Joshua.Sartin\Desktop\CustomerBrandSync\temp_BBT_NON_CUSTOMER_1748623455722.csv
+   Segment: BBT_NON_CUSTOMER
+
+[SUCCESS] Google Ads client initialized successfully
+[SUCCESS] Read 103468 customers from CSV file
+[SUCCESS] Created 103468 user data operations
+[SUCCESS] Created offline user data job: customers/4018470779/offlineUserDataJobs/47894834361
+[UPLOAD] Uploading batch 1/11 (10000 operations)
+[ERROR] Unexpected error: Parameter to MergeFrom() must be instance of same class: expected <class 'OfflineUserDataJobOperation'> got <class 'google.ads.googleads.v17.services.types.user_data_service.UserDataOperation'>.
+[ERROR] Upload failed for BBT_NON_CUSTOMER
+
+2025-05-30T16:44:30.398Z [INFO]: Tracking record updated for BBT_NON_CUSTOMER: 103468 operations
